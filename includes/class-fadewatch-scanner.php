@@ -59,7 +59,7 @@ final class Fadewatch_Scanner {
 			$schedules['fadewatch_six_hours'] = array(
 				'interval' => 6 * HOUR_IN_SECONDS,
 				// Avoid loading translations before `init` if another plugin asks early.
-				'display'  => did_action( 'init' ) ? __( 'Every 6 hours', 'fadewatch' ) : 'Every 6 hours',
+				'display'  => did_action( 'init' ) ? __( 'Every 6 hours', 'fadewatch-abandoned-closed-add-on-checker' ) : 'Every 6 hours',
 			);
 		}
 		return $schedules;

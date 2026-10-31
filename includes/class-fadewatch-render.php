@@ -44,7 +44,7 @@ final class Fadewatch_Render {
 	public static function badge( array $eval ) {
 		$label = Fadewatch_Status::label( $eval['status'] );
 		if ( Fadewatch_Status::CLOSED === $eval['status'] && 'security-issue' === $eval['reason'] ) {
-			$label = __( 'Closed: security issue', 'fadewatch' );
+			$label = __( 'Closed: security issue', 'fadewatch-abandoned-closed-add-on-checker' );
 		}
 
 		return sprintf(
@@ -69,20 +69,20 @@ final class Fadewatch_Render {
 
 		switch ( $eval['status'] ) {
 			case Fadewatch_Status::CLOSED:
-				$date = $eval['closed_date'] ? self::format_ymd( $eval['closed_date'] ) : __( 'an unknown date', 'fadewatch' );
+				$date = $eval['closed_date'] ? self::format_ymd( $eval['closed_date'] ) : __( 'an unknown date', 'fadewatch-abandoned-closed-add-on-checker' );
 				if ( $eval['reason_text'] ) {
 					/* translators: 1: date, 2: closure reason such as "Security Issue". */
-					$lines[] = sprintf( __( 'Closed on %1$s: %2$s', 'fadewatch' ), $date, $eval['reason_text'] );
+					$lines[] = sprintf( __( 'Closed on %1$s: %2$s', 'fadewatch-abandoned-closed-add-on-checker' ), $date, $eval['reason_text'] );
 				} else {
 					/* translators: %s: date. */
-					$lines[] = sprintf( __( 'Closed on %s', 'fadewatch' ), $date );
+					$lines[] = sprintf( __( 'Closed on %s', 'fadewatch-abandoned-closed-add-on-checker' ), $date );
 				}
 				if ( 'security-issue' === $eval['reason'] ) {
-					$lines[] = __( 'It will not receive security fixes. Replace it as soon as possible.', 'fadewatch' );
+					$lines[] = __( 'It will not receive security fixes. Replace it as soon as possible.', 'fadewatch-abandoned-closed-add-on-checker' );
 				} elseif ( 'author-request' === $eval['reason'] ) {
-					$lines[] = __( 'Closed at the author\'s request. This is not a security finding, but the plugin will get no more updates.', 'fadewatch' );
+					$lines[] = __( 'Closed at the author\'s request. This is not a security finding, but the plugin will get no more updates.', 'fadewatch-abandoned-closed-add-on-checker' );
 				} else {
-					$lines[] = __( 'It no longer receives updates from WordPress.org.', 'fadewatch' );
+					$lines[] = __( 'It no longer receives updates from WordPress.org.', 'fadewatch-abandoned-closed-add-on-checker' );
 				}
 				break;
 
@@ -92,7 +92,7 @@ final class Fadewatch_Render {
 				if ( $eval['last_updated'] ) {
 					$lines[] = sprintf(
 						/* translators: 1: relative time such as "3 years", 2: date. */
-						__( 'Latest update release: %1$s ago (%2$s)', 'fadewatch' ),
+						__( 'Latest update release: %1$s ago (%2$s)', 'fadewatch-abandoned-closed-add-on-checker' ),
 						human_time_diff( $eval['last_updated'] ),
 						wp_date( get_option( 'date_format' ), $eval['last_updated'] )
 					);
@@ -101,18 +101,18 @@ final class Fadewatch_Render {
 
 			case Fadewatch_Status::NOT_ON_ORG:
 				if ( 'update_uri' === $eval['note'] ) {
-					$lines[] = __( 'Gets updates from another source (Update URI header).', 'fadewatch' );
+					$lines[] = __( 'Gets updates from another source (Update URI header).', 'fadewatch-abandoned-closed-add-on-checker' );
 				} elseif ( 'premium' === $eval['note'] ) {
-					$lines[] = __( 'Not on WordPress.org (premium version?).', 'fadewatch' );
+					$lines[] = __( 'Not on WordPress.org (premium version?).', 'fadewatch-abandoned-closed-add-on-checker' );
 				} else {
-					$lines[] = __( 'Not found on WordPress.org: probably a premium or custom plugin.', 'fadewatch' );
+					$lines[] = __( 'Not found on WordPress.org: probably a premium or custom plugin.', 'fadewatch-abandoned-closed-add-on-checker' );
 				}
 				break;
 
 			case Fadewatch_Status::UNVERIFIED:
 				$lines[] = sprintf(
 					/* translators: 1: plugin slug, 2: name of the WordPress.org plugin. */
-					__( 'The WordPress.org plugin "%1$s" is called "%2$s" and looks like a different plugin, so its data is not used.', 'fadewatch' ),
+					__( 'The WordPress.org plugin "%1$s" is called "%2$s" and looks like a different plugin, so its data is not used.', 'fadewatch-abandoned-closed-add-on-checker' ),
 					$item['slug'],
 					is_array( $record ) && ! empty( $record['name'] ) ? $record['name'] : '?'
 				);
@@ -121,21 +121,21 @@ final class Fadewatch_Render {
 			case Fadewatch_Status::UNKNOWN:
 				$lines[] = $eval['error']
 					/* translators: %s: error message. */
-					? sprintf( __( 'Could not reach WordPress.org (%s). It will be retried.', 'fadewatch' ), $eval['error'] )
-					: __( 'Could not read the data from WordPress.org. It will be retried.', 'fadewatch' );
+					? sprintf( __( 'Could not reach WordPress.org (%s). It will be retried.', 'fadewatch-abandoned-closed-add-on-checker' ), $eval['error'] )
+					: __( 'Could not read the data from WordPress.org. It will be retried.', 'fadewatch-abandoned-closed-add-on-checker' );
 				break;
 
 			case Fadewatch_Status::PENDING:
-				$lines[] = __( 'Waiting for the first check.', 'fadewatch' );
+				$lines[] = __( 'Waiting for the first check.', 'fadewatch-abandoned-closed-add-on-checker' );
 				break;
 
 			case Fadewatch_Status::SKIPPED:
 				if ( 'inactive' === $eval['note'] ) {
-					$lines[] = __( 'Inactive plugins are excluded in the settings.', 'fadewatch' );
+					$lines[] = __( 'Inactive plugins are excluded in the settings.', 'fadewatch-abandoned-closed-add-on-checker' );
 				} elseif ( 'filtered' === $eval['note'] ) {
-					$lines[] = __( 'Excluded by a filter.', 'fadewatch' );
+					$lines[] = __( 'Excluded by a filter.', 'fadewatch-abandoned-closed-add-on-checker' );
 				} else {
-					$lines[] = __( 'No WordPress.org slug could be determined.', 'fadewatch' );
+					$lines[] = __( 'No WordPress.org slug could be determined.', 'fadewatch-abandoned-closed-add-on-checker' );
 				}
 				break;
 		}
@@ -147,7 +147,7 @@ final class Fadewatch_Render {
 					'Not tested with the last %1$d major WordPress release (tested up to %2$s).',
 					'Not tested with the last %1$d major WordPress releases (tested up to %2$s).',
 					$eval['tested_behind'],
-					'fadewatch'
+					'fadewatch-abandoned-closed-add-on-checker'
 				),
 				$eval['tested_behind'],
 				$record['tested']
@@ -157,12 +157,12 @@ final class Fadewatch_Render {
 		if ( $eval['stale'] && is_array( $record ) && ! empty( $record['checked_at'] ) ) {
 			$lines[] = sprintf(
 				/* translators: %s: relative time such as "9 days". */
-				__( 'Data out of date: last successful check %s ago.', 'fadewatch' ),
+				__( 'Data out of date: last successful check %s ago.', 'fadewatch-abandoned-closed-add-on-checker' ),
 				human_time_diff( (int) $record['checked_at'] )
 			);
 		} elseif ( Fadewatch_Status::UNKNOWN !== $eval['status'] && $eval['error'] ) {
 			/* translators: %s: error message. */
-			$lines[] = sprintf( __( 'Last check failed (%s); showing the previous result.', 'fadewatch' ), $eval['error'] );
+			$lines[] = sprintf( __( 'Last check failed (%s); showing the previous result.', 'fadewatch-abandoned-closed-add-on-checker' ), $eval['error'] );
 		}
 
 		return $lines;

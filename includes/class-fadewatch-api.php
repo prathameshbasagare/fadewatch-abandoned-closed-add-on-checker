@@ -96,7 +96,7 @@ final class Fadewatch_API {
 			if ( is_array( $data ) && ! isset( $data['error'] ) && ! empty( $data['slug'] ) ) {
 				return self::normalise_ok( $data );
 			}
-			return self::error( __( 'WordPress.org returned an unexpected response.', 'fadewatch' ) );
+			return self::error( __( 'WordPress.org returned an unexpected response.', 'fadewatch-abandoned-closed-add-on-checker' ) );
 		}
 
 		if ( 404 === $code && is_array( $data ) ) {
@@ -109,12 +109,12 @@ final class Fadewatch_API {
 		}
 
 		if ( 429 === $code ) {
-			return self::error( __( 'WordPress.org rate limit reached.', 'fadewatch' ) );
+			return self::error( __( 'WordPress.org rate limit reached.', 'fadewatch-abandoned-closed-add-on-checker' ) );
 		}
 
 		return self::error(
 			/* translators: %d: HTTP status code. */
-			sprintf( __( 'WordPress.org returned HTTP %d.', 'fadewatch' ), $code )
+			sprintf( __( 'WordPress.org returned HTTP %d.', 'fadewatch-abandoned-closed-add-on-checker' ), $code )
 		);
 	}
 

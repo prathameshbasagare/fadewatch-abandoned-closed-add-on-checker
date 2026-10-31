@@ -45,10 +45,10 @@ final class Fadewatch_Ajax {
 	 */
 	private static function authorize() {
 		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your session has expired. Please reload the page.', 'fadewatch' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Your session has expired. Please reload the page.', 'fadewatch-abandoned-closed-add-on-checker' ) ), 403 );
 		}
 		if ( ! Fadewatch_Settings::current_user_can() ) {
-			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to do that.', 'fadewatch' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-add-on-checker' ) ), 403 );
 		}
 	}
 }

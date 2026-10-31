@@ -72,7 +72,7 @@ final class Fadewatch_Plugins_Screen {
 	 * @return array
 	 */
 	public static function add_column( $columns ) {
-		$columns[ self::COLUMN ] = __( 'Maintenance', 'fadewatch' );
+		$columns[ self::COLUMN ] = __( 'Maintenance', 'fadewatch-abandoned-closed-add-on-checker' );
 		return $columns;
 	}
 
@@ -102,7 +102,7 @@ final class Fadewatch_Plugins_Screen {
 		}
 
 		if ( in_array( self::plugin_status(), array( 'mustuse', 'dropins' ), true ) ) {
-			echo '<span class="fadewatch-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'fadewatch' ) . '</span>';
+			echo '<span class="fadewatch-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'fadewatch-abandoned-closed-add-on-checker' ) . '</span>';
 			return;
 		}
 
@@ -120,8 +120,8 @@ final class Fadewatch_Plugins_Screen {
 			printf(
 				'<a class="fadewatch-detail" href="%1$s" target="_blank" rel="noopener noreferrer">%2$s<span class="screen-reader-text"> %3$s</span></a>',
 				esc_url( Fadewatch_Render::org_url( $row['item']['slug'] ) ),
-				esc_html__( 'View on WordPress.org', 'fadewatch' ),
-				esc_html__( '(opens in a new tab)', 'fadewatch' )
+				esc_html__( 'View on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ),
+				esc_html__( '(opens in a new tab)', 'fadewatch-abandoned-closed-add-on-checker' )
 			);
 		}
 	}
