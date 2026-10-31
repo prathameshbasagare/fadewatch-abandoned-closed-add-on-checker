@@ -2,7 +2,7 @@
 /**
  * Status model: turns stored data into exactly one status per plugin.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -54,15 +54,15 @@ final class ABPC_Status {
 	 */
 	public static function labels() {
 		return array(
-			self::MAINTAINED => __( 'Maintained', 'abandoned-plugin-checker' ),
-			self::AGEING     => __( 'Ageing', 'abandoned-plugin-checker' ),
-			self::ABANDONED  => __( 'Possibly abandoned', 'abandoned-plugin-checker' ),
-			self::CLOSED     => __( 'Closed', 'abandoned-plugin-checker' ),
-			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'abandoned-plugin-checker' ),
-			self::UNKNOWN    => __( "Couldn't check", 'abandoned-plugin-checker' ),
-			self::UNVERIFIED => __( 'Not verified', 'abandoned-plugin-checker' ),
-			self::PENDING    => __( 'Not checked yet', 'abandoned-plugin-checker' ),
-			self::SKIPPED    => __( 'Not checked', 'abandoned-plugin-checker' ),
+			self::MAINTAINED => __( 'Maintained', 'stalewatch' ),
+			self::AGEING     => __( 'Ageing', 'stalewatch' ),
+			self::ABANDONED  => __( 'Possibly abandoned', 'stalewatch' ),
+			self::CLOSED     => __( 'Closed', 'stalewatch' ),
+			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'stalewatch' ),
+			self::UNKNOWN    => __( "Couldn't check", 'stalewatch' ),
+			self::UNVERIFIED => __( 'Not verified', 'stalewatch' ),
+			self::PENDING    => __( 'Not checked yet', 'stalewatch' ),
+			self::SKIPPED    => __( 'Not checked', 'stalewatch' ),
 		);
 	}
 

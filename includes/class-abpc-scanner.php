@@ -2,7 +2,7 @@
 /**
  * Background scanning: queue, batches, schedules and change detection.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -59,7 +59,7 @@ final class ABPC_Scanner {
 			$schedules['abpc_six_hours'] = array(
 				'interval' => 6 * HOUR_IN_SECONDS,
 				// Avoid loading translations before `init` if another plugin asks early.
-				'display'  => did_action( 'init' ) ? __( 'Every 6 hours', 'abandoned-plugin-checker' ) : 'Every 6 hours',
+				'display'  => did_action( 'init' ) ? __( 'Every 6 hours', 'stalewatch' ) : 'Every 6 hours',
 			);
 		}
 		return $schedules;

@@ -3,7 +3,7 @@
  * Report and settings page (Tools → Plugin Maintenance, or
  * Network Admin → Plugins → Plugin Maintenance on multisite).
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class ABPC_Admin {
 
-	const PAGE = 'abandoned-plugin-checker';
+	const PAGE = 'stalewatch';
 
 	/**
 	 * Page hook suffix.
@@ -56,7 +56,7 @@ final class ABPC_Admin {
 	 * the network admin.
 	 */
 	public static function add_menu() {
-		$title = __( 'Plugin Maintenance', 'abandoned-plugin-checker' );
+		$title = __( 'Plugin Maintenance', 'stalewatch' );
 
 		if ( is_multisite() ) {
 			self::$hook = (string) add_submenu_page( 'plugins.php', $title, $title, ABPC_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
@@ -101,11 +101,11 @@ final class ABPC_Admin {
 				'start'   => empty( $state['queue'] ) && ! $meta['last_full_scan'] && ! self::is_settings_tab(),
 				'i18n'    => array(
 					/* translators: 1: number of checked plugins, 2: total number of plugins. */
-					'progress' => __( 'Checked %1$d of %2$d plugins…', 'abandoned-plugin-checker' ),
-					'waiting'  => __( 'Another check is running. Waiting…', 'abandoned-plugin-checker' ),
-					'done'     => __( 'Check complete. Reloading…', 'abandoned-plugin-checker' ),
-					'failed'   => __( 'The check failed. Please try again.', 'abandoned-plugin-checker' ),
-					'starting' => __( 'Starting check…', 'abandoned-plugin-checker' ),
+					'progress' => __( 'Checked %1$d of %2$d plugins…', 'stalewatch' ),
+					'waiting'  => __( 'Another check is running. Waiting…', 'stalewatch' ),
+					'done'     => __( 'Check complete. Reloading…', 'stalewatch' ),
+					'failed'   => __( 'The check failed. Please try again.', 'stalewatch' ),
+					'starting' => __( 'Starting check…', 'stalewatch' ),
 				),
 			)
 		);
@@ -121,8 +121,8 @@ final class ABPC_Admin {
 		if ( ABPC_Settings::current_user_can() ) {
 			array_unshift(
 				$links,
-				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'abandoned-plugin-checker' ) ),
-				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url( 'settings' ) ), esc_html__( 'Settings', 'abandoned-plugin-checker' ) )
+				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'stalewatch' ) ),
+				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url( 'settings' ) ), esc_html__( 'Settings', 'stalewatch' ) )
 			);
 		}
 		return $links;
@@ -143,17 +143,17 @@ final class ABPC_Admin {
 	 */
 	public static function render_page() {
 		if ( ! ABPC_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'abandoned-plugin-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'stalewatch' ), 403 );
 		}
 
 		$settings_tab = self::is_settings_tab();
 		?>
 		<div class="wrap abpc-wrap">
-			<h1><?php esc_html_e( 'Plugin Maintenance', 'abandoned-plugin-checker' ); ?></h1>
+			<h1><?php esc_html_e( 'Plugin Maintenance', 'stalewatch' ); ?></h1>
 
-			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'abandoned-plugin-checker' ); ?>">
-				<a href="<?php echo esc_url( self::page_url() ); ?>" class="nav-tab<?php echo $settings_tab ? '' : ' nav-tab-active'; ?>"<?php echo $settings_tab ? '' : ' aria-current="page"'; ?>><?php esc_html_e( 'Report', 'abandoned-plugin-checker' ); ?></a>
-				<a href="<?php echo esc_url( self::page_url( 'settings' ) ); ?>" class="nav-tab<?php echo $settings_tab ? ' nav-tab-active' : ''; ?>"<?php echo $settings_tab ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Settings', 'abandoned-plugin-checker' ); ?></a>
+			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'stalewatch' ); ?>">
+				<a href="<?php echo esc_url( self::page_url() ); ?>" class="nav-tab<?php echo $settings_tab ? '' : ' nav-tab-active'; ?>"<?php echo $settings_tab ? '' : ' aria-current="page"'; ?>><?php esc_html_e( 'Report', 'stalewatch' ); ?></a>
+				<a href="<?php echo esc_url( self::page_url( 'settings' ) ); ?>" class="nav-tab<?php echo $settings_tab ? ' nav-tab-active' : ''; ?>"<?php echo $settings_tab ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Settings', 'stalewatch' ); ?></a>
 			</nav>
 
 			<?php
@@ -176,7 +176,7 @@ final class ABPC_Admin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag set by our own redirect.
 		if ( isset( $_GET['abpc_saved'] ) && '1' === sanitize_key( wp_unslash( $_GET['abpc_saved'] ) ) ) {
 			wp_admin_notice(
-				__( 'Settings saved.', 'abandoned-plugin-checker' ),
+				__( 'Settings saved.', 'stalewatch' ),
 				array(
 					'type'        => 'success',
 					'dismissible' => true,
@@ -186,14 +186,14 @@ final class ABPC_Admin {
 
 		if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 			wp_admin_notice(
-				__( 'WP-Cron is disabled on this site (DISABLE_WP_CRON). Automatic checks only run if a real cron job calls wp-cron.php. You can always use "Check now".', 'abandoned-plugin-checker' ),
+				__( 'WP-Cron is disabled on this site (DISABLE_WP_CRON). Automatic checks only run if a real cron job calls wp-cron.php. You can always use "Check now".', 'stalewatch' ),
 				array( 'type' => 'info' )
 			);
 		}
 
 		if ( ABPC_Settings::scheduled_scans_paused() ) {
 			wp_admin_notice(
-				__( 'Scheduled checks are paused because this is a local environment. "Check now" still works.', 'abandoned-plugin-checker' ),
+				__( 'Scheduled checks are paused because this is a local environment. "Check now" still works.', 'stalewatch' ),
 				array( 'type' => 'info' )
 			);
 		}
@@ -235,17 +235,17 @@ final class ABPC_Admin {
 				if ( $meta['last_full_scan'] ) {
 					printf(
 						/* translators: 1: relative time such as "3 hours", 2: date and time. */
-						esc_html__( 'Last full check: %1$s ago (%2$s).', 'abandoned-plugin-checker' ),
+						esc_html__( 'Last full check: %1$s ago (%2$s).', 'stalewatch' ),
 						esc_html( human_time_diff( (int) $meta['last_full_scan'] ) ),
 						esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $meta['last_full_scan'] ) )
 					);
 				} else {
-					esc_html_e( 'No full check has completed yet.', 'abandoned-plugin-checker' );
+					esc_html_e( 'No full check has completed yet.', 'stalewatch' );
 				}
 				?>
 			</p>
-			<button type="button" class="button button-primary" id="abpc-check-now"><?php esc_html_e( 'Check now', 'abandoned-plugin-checker' ); ?></button>
-			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'abandoned-plugin-checker' ); ?></a>
+			<button type="button" class="button button-primary" id="abpc-check-now"><?php esc_html_e( 'Check now', 'stalewatch' ); ?></button>
+			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'stalewatch' ); ?></a>
 		</div>
 
 		<div class="abpc-progress" id="abpc-progress" hidden>
@@ -254,21 +254,21 @@ final class ABPC_Admin {
 		</div>
 
 		<table class="widefat striped abpc-table">
-			<caption class="screen-reader-text"><?php esc_html_e( 'Maintenance status of installed plugins, most serious first', 'abandoned-plugin-checker' ); ?></caption>
+			<caption class="screen-reader-text"><?php esc_html_e( 'Maintenance status of installed plugins, most serious first', 'stalewatch' ); ?></caption>
 			<thead>
 				<tr>
-					<th scope="col"><?php esc_html_e( 'Plugin', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Status', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Tested up to', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Active installs', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Rating', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Support threads resolved', 'abandoned-plugin-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Version (installed / latest)', 'abandoned-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Plugin', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Status', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Tested up to', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Active installs', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Rating', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Support threads resolved', 'stalewatch' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Version (installed / latest)', 'stalewatch' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php if ( empty( $rows ) ) : ?>
-					<tr><td colspan="7"><?php esc_html_e( 'No plugins found.', 'abandoned-plugin-checker' ); ?></td></tr>
+					<tr><td colspan="7"><?php esc_html_e( 'No plugins found.', 'stalewatch' ); ?></td></tr>
 				<?php endif; ?>
 				<?php
 				foreach ( $rows as $row ) :
@@ -281,9 +281,9 @@ final class ABPC_Admin {
 						<td class="abpc-table__plugin">
 							<strong><?php echo esc_html( $item['name'] ); ?></strong>
 							<span class="abpc-detail">
-								<?php echo esc_html( $item['active'] ? __( 'Active', 'abandoned-plugin-checker' ) : __( 'Inactive', 'abandoned-plugin-checker' ) ); ?>
+								<?php echo esc_html( $item['active'] ? __( 'Active', 'stalewatch' ) : __( 'Inactive', 'stalewatch' ) ); ?>
 								<?php if ( ABPC_Render::has_org_page( $eval ) && ABPC_Status::CLOSED !== $eval['status'] ) : ?>
-									· <a href="<?php echo esc_url( ABPC_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'abandoned-plugin-checker' ); ?></span></a>
+									· <a href="<?php echo esc_url( ABPC_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'stalewatch' ); ?></span></a>
 								<?php else : ?>
 									· <?php echo esc_html( $item['slug'] ); ?>
 								<?php endif; ?>
@@ -302,7 +302,7 @@ final class ABPC_Admin {
 							if ( $ok && $record['num_ratings'] > 0 ) {
 								printf(
 									/* translators: 1: rating percentage, 2: number of ratings. */
-									esc_html__( '%1$d%% (%2$s ratings)', 'abandoned-plugin-checker' ),
+									esc_html__( '%1$d%% (%2$s ratings)', 'stalewatch' ),
 									(int) $record['rating'],
 									esc_html( number_format_i18n( $record['num_ratings'] ) )
 								);
@@ -316,7 +316,7 @@ final class ABPC_Admin {
 							if ( $ok && $record['support_threads'] > 0 ) {
 								printf(
 									/* translators: 1: resolved threads, 2: total threads in the last two months. */
-									esc_html__( '%1$d of %2$d', 'abandoned-plugin-checker' ),
+									esc_html__( '%1$d of %2$d', 'stalewatch' ),
 									(int) $record['support_threads_resolved'],
 									(int) $record['support_threads']
 								);
@@ -339,13 +339,13 @@ final class ABPC_Admin {
 		</table>
 
 		<?php if ( $extras ) : ?>
-			<h2><?php esc_html_e( 'Not checked', 'abandoned-plugin-checker' ); ?></h2>
-			<p><?php esc_html_e( 'Must-use plugins and drop-ins are not installed from WordPress.org, so they are not checked.', 'abandoned-plugin-checker' ); ?></p>
+			<h2><?php esc_html_e( 'Not checked', 'stalewatch' ); ?></h2>
+			<p><?php esc_html_e( 'Must-use plugins and drop-ins are not installed from WordPress.org, so they are not checked.', 'stalewatch' ); ?></p>
 			<ul class="abpc-extras">
 				<?php foreach ( $extras as $extra ) : ?>
 					<li>
 						<?php echo esc_html( $extra['name'] ); ?>
-						<span class="abpc-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'abandoned-plugin-checker' ) : __( 'drop-in', 'abandoned-plugin-checker' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
+						<span class="abpc-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'stalewatch' ) : __( 'drop-in', 'stalewatch' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -363,44 +363,44 @@ final class ABPC_Admin {
 			<input type="hidden" name="action" value="abpc_save_settings" />
 			<?php wp_nonce_field( 'abpc_save_settings' ); ?>
 
-			<h2><?php esc_html_e( 'Thresholds', 'abandoned-plugin-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'Thresholds', 'stalewatch' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="abpc_ageing_months"><?php esc_html_e( '"Ageing" after', 'abandoned-plugin-checker' ); ?></label></th>
+					<th scope="row"><label for="abpc_ageing_months"><?php esc_html_e( '"Ageing" after', 'stalewatch' ); ?></label></th>
 					<td>
 						<input type="number" min="1" max="120" step="1" class="small-text" id="abpc_ageing_months" name="abpc_ageing_months" value="<?php echo esc_attr( $s['ageing_months'] ); ?>" aria-describedby="abpc_ageing_months_desc" />
-						<?php esc_html_e( 'months without an update', 'abandoned-plugin-checker' ); ?>
-						<p class="description" id="abpc_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'abandoned-plugin-checker' ); ?></p>
+						<?php esc_html_e( 'months without an update', 'stalewatch' ); ?>
+						<p class="description" id="abpc_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'stalewatch' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="abpc_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'abandoned-plugin-checker' ); ?></label></th>
+					<th scope="row"><label for="abpc_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'stalewatch' ); ?></label></th>
 					<td>
 						<input type="number" min="2" max="240" step="1" class="small-text" id="abpc_abandoned_months" name="abpc_abandoned_months" value="<?php echo esc_attr( $s['abandoned_months'] ); ?>" aria-describedby="abpc_abandoned_months_desc" />
-						<?php esc_html_e( 'months without an update', 'abandoned-plugin-checker' ); ?>
-						<p class="description" id="abpc_abandoned_months_desc"><?php esc_html_e( 'Default: 24, the same as Wordfence. Must be higher than the "Ageing" value.', 'abandoned-plugin-checker' ); ?></p>
+						<?php esc_html_e( 'months without an update', 'stalewatch' ); ?>
+						<p class="description" id="abpc_abandoned_months_desc"><?php esc_html_e( 'Default: 24, the same as Wordfence. Must be higher than the "Ageing" value.', 'stalewatch' ); ?></p>
 					</td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'What to check', 'abandoned-plugin-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'What to check', 'stalewatch' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'abandoned-plugin-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'stalewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'abandoned-plugin-checker' ); ?></label>
-						<p class="description"><?php esc_html_e( 'Recommended: the files of inactive plugins are still on the server and can still be attacked.', 'abandoned-plugin-checker' ); ?></p>
+						<label><input type="checkbox" name="abpc_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'stalewatch' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Recommended: the files of inactive plugins are still on the server and can still be attacked.', 'stalewatch' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Local environments', 'abandoned-plugin-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Local environments', 'stalewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'abandoned-plugin-checker' ); ?></label>
+						<label><input type="checkbox" name="abpc_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'stalewatch' ); ?></label>
 						<p class="description">
 							<?php
 							printf(
 								/* translators: %s: environment type such as "production". */
-								esc_html__( 'Current environment type: %s.', 'abandoned-plugin-checker' ),
+								esc_html__( 'Current environment type: %s.', 'stalewatch' ),
 								'<code>' . esc_html( wp_get_environment_type() ) . '</code>'
 							);
 							?>
@@ -409,35 +409,35 @@ final class ABPC_Admin {
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'E-mail notifications', 'abandoned-plugin-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'E-mail notifications', 'stalewatch' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Send e-mails', 'abandoned-plugin-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Send e-mails', 'stalewatch' ); ?></th>
 					<td>
 						<fieldset>
-							<legend class="screen-reader-text"><?php esc_html_e( 'Send e-mails', 'abandoned-plugin-checker' ); ?></legend>
-							<label><input type="radio" name="abpc_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'abandoned-plugin-checker' ); ?></label><br />
-							<label><input type="radio" name="abpc_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'abandoned-plugin-checker' ); ?></label><br />
-							<label><input type="radio" name="abpc_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'abandoned-plugin-checker' ); ?></label>
-							<p class="description"><?php esc_html_e( 'A plugin closed for a security issue triggers an immediate e-mail. Other changes are collected into one e-mail per check.', 'abandoned-plugin-checker' ); ?></p>
+							<legend class="screen-reader-text"><?php esc_html_e( 'Send e-mails', 'stalewatch' ); ?></legend>
+							<label><input type="radio" name="abpc_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'stalewatch' ); ?></label><br />
+							<label><input type="radio" name="abpc_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'stalewatch' ); ?></label><br />
+							<label><input type="radio" name="abpc_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'stalewatch' ); ?></label>
+							<p class="description"><?php esc_html_e( 'A plugin closed for a security issue triggers an immediate e-mail. Other changes are collected into one e-mail per check.', 'stalewatch' ); ?></p>
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="abpc_recipients"><?php esc_html_e( 'Recipients', 'abandoned-plugin-checker' ); ?></label></th>
+					<th scope="row"><label for="abpc_recipients"><?php esc_html_e( 'Recipients', 'stalewatch' ); ?></label></th>
 					<td>
 						<input type="text" class="regular-text" id="abpc_recipients" name="abpc_recipients" value="<?php echo esc_attr( $s['recipients'] ); ?>" placeholder="<?php echo esc_attr( get_site_option( 'admin_email' ) ); ?>" aria-describedby="abpc_recipients_desc" />
-						<p class="description" id="abpc_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'abandoned-plugin-checker' ); ?></p>
+						<p class="description" id="abpc_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'stalewatch' ); ?></p>
 					</td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'Uninstall', 'abandoned-plugin-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'Uninstall', 'stalewatch' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Data', 'abandoned-plugin-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Data', 'stalewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'abandoned-plugin-checker' ); ?></label>
+						<label><input type="checkbox" name="abpc_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'stalewatch' ); ?></label>
 					</td>
 				</tr>
 			</table>
@@ -452,7 +452,7 @@ final class ABPC_Admin {
 	 */
 	public static function handle_save_settings() {
 		if ( ! ABPC_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'abandoned-plugin-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'stalewatch' ), 403 );
 		}
 		check_admin_referer( 'abpc_save_settings' );
 
@@ -496,7 +496,7 @@ final class ABPC_Admin {
 	 */
 	public static function handle_export_csv() {
 		if ( ! ABPC_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'abandoned-plugin-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'stalewatch' ), 403 );
 		}
 		check_admin_referer( 'abpc_export_csv' );
 
@@ -513,22 +513,22 @@ final class ABPC_Admin {
 		self::csv_row(
 			$out,
 			array(
-				__( 'Plugin', 'abandoned-plugin-checker' ),
-				__( 'Plugin file', 'abandoned-plugin-checker' ),
-				__( 'Slug', 'abandoned-plugin-checker' ),
-				__( 'Active', 'abandoned-plugin-checker' ),
-				__( 'Status', 'abandoned-plugin-checker' ),
-				__( 'Severity', 'abandoned-plugin-checker' ),
-				__( 'Details', 'abandoned-plugin-checker' ),
-				__( 'Latest update release', 'abandoned-plugin-checker' ),
-				__( 'Closed date', 'abandoned-plugin-checker' ),
-				__( 'Closure reason', 'abandoned-plugin-checker' ),
-				__( 'Tested up to', 'abandoned-plugin-checker' ),
-				__( 'Active installs', 'abandoned-plugin-checker' ),
-				__( 'Rating', 'abandoned-plugin-checker' ),
-				__( 'Installed version', 'abandoned-plugin-checker' ),
-				__( 'Latest version', 'abandoned-plugin-checker' ),
-				__( 'Last checked', 'abandoned-plugin-checker' ),
+				__( 'Plugin', 'stalewatch' ),
+				__( 'Plugin file', 'stalewatch' ),
+				__( 'Slug', 'stalewatch' ),
+				__( 'Active', 'stalewatch' ),
+				__( 'Status', 'stalewatch' ),
+				__( 'Severity', 'stalewatch' ),
+				__( 'Details', 'stalewatch' ),
+				__( 'Latest update release', 'stalewatch' ),
+				__( 'Closed date', 'stalewatch' ),
+				__( 'Closure reason', 'stalewatch' ),
+				__( 'Tested up to', 'stalewatch' ),
+				__( 'Active installs', 'stalewatch' ),
+				__( 'Rating', 'stalewatch' ),
+				__( 'Installed version', 'stalewatch' ),
+				__( 'Latest version', 'stalewatch' ),
+				__( 'Last checked', 'stalewatch' ),
 			)
 		);
 
@@ -544,7 +544,7 @@ final class ABPC_Admin {
 					$item['name'],
 					$item['file'],
 					$item['slug'],
-					$item['active'] ? __( 'Yes', 'abandoned-plugin-checker' ) : __( 'No', 'abandoned-plugin-checker' ),
+					$item['active'] ? __( 'Yes', 'stalewatch' ) : __( 'No', 'stalewatch' ),
 					ABPC_Status::label( $eval['status'] ),
 					$eval['severity'],
 					implode( ' ', ABPC_Render::details( $eval, $item, $row['record'] ) ),
@@ -592,8 +592,8 @@ final class ABPC_Admin {
 			return;
 		}
 
-		$content = '<p>' . esc_html__( 'Abandoned Plugin Checker sends the slugs (short names) of installed plugins to api.wordpress.org to look up their maintenance status. No personal data about visitors or users is sent or stored, and no tracking is used.', 'abandoned-plugin-checker' ) . '</p>';
+		$content = '<p>' . esc_html__( 'Stalewatch sends the slugs (short names) of installed plugins to api.wordpress.org to look up their maintenance status. No personal data about visitors or users is sent or stored, and no tracking is used.', 'stalewatch' ) . '</p>';
 
-		wp_add_privacy_policy_content( __( 'Abandoned Plugin Checker', 'abandoned-plugin-checker' ), wp_kses_post( $content ) );
+		wp_add_privacy_policy_content( __( 'Stalewatch', 'stalewatch' ), wp_kses_post( $content ) );
 	}
 }

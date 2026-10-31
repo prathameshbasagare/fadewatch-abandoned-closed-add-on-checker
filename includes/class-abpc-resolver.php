@@ -2,7 +2,7 @@
 /**
  * Works out which WordPress.org plugin each installed plugin corresponds to.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;

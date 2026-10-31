@@ -2,7 +2,7 @@
 /**
  * AJAX endpoints for "Check now".
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -45,10 +45,10 @@ final class ABPC_Ajax {
 	 */
 	private static function authorize() {
 		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your session has expired. Please reload the page.', 'abandoned-plugin-checker' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Your session has expired. Please reload the page.', 'stalewatch' ) ), 403 );
 		}
 		if ( ! ABPC_Settings::current_user_can() ) {
-			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to do that.', 'abandoned-plugin-checker' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to do that.', 'stalewatch' ) ), 403 );
 		}
 	}
 }

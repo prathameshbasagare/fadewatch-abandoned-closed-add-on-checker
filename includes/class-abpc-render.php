@@ -3,7 +3,7 @@
  * Shared HTML/text rendering helpers. Every method returns escaped HTML
  * or plain text as documented.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -44,7 +44,7 @@ final class ABPC_Render {
 	public static function badge( array $eval ) {
 		$label = ABPC_Status::label( $eval['status'] );
 		if ( ABPC_Status::CLOSED === $eval['status'] && 'security-issue' === $eval['reason'] ) {
-			$label = __( 'Closed: security issue', 'abandoned-plugin-checker' );
+			$label = __( 'Closed: security issue', 'stalewatch' );
 		}
 
 		return sprintf(
@@ -69,20 +69,20 @@ final class ABPC_Render {
 
 		switch ( $eval['status'] ) {
 			case ABPC_Status::CLOSED:
-				$date = $eval['closed_date'] ? self::format_ymd( $eval['closed_date'] ) : __( 'an unknown date', 'abandoned-plugin-checker' );
+				$date = $eval['closed_date'] ? self::format_ymd( $eval['closed_date'] ) : __( 'an unknown date', 'stalewatch' );
 				if ( $eval['reason_text'] ) {
 					/* translators: 1: date, 2: closure reason such as "Security Issue". */
-					$lines[] = sprintf( __( 'Closed on %1$s: %2$s', 'abandoned-plugin-checker' ), $date, $eval['reason_text'] );
+					$lines[] = sprintf( __( 'Closed on %1$s: %2$s', 'stalewatch' ), $date, $eval['reason_text'] );
 				} else {
 					/* translators: %s: date. */
-					$lines[] = sprintf( __( 'Closed on %s', 'abandoned-plugin-checker' ), $date );
+					$lines[] = sprintf( __( 'Closed on %s', 'stalewatch' ), $date );
 				}
 				if ( 'security-issue' === $eval['reason'] ) {
-					$lines[] = __( 'It will not receive security fixes. Replace it as soon as possible.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'It will not receive security fixes. Replace it as soon as possible.', 'stalewatch' );
 				} elseif ( 'author-request' === $eval['reason'] ) {
-					$lines[] = __( 'Closed at the author\'s request. This is not a security finding, but the plugin will get no more updates.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Closed at the author\'s request. This is not a security finding, but the plugin will get no more updates.', 'stalewatch' );
 				} else {
-					$lines[] = __( 'It no longer receives updates from WordPress.org.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'It no longer receives updates from WordPress.org.', 'stalewatch' );
 				}
 				break;
 
@@ -92,7 +92,7 @@ final class ABPC_Render {
 				if ( $eval['last_updated'] ) {
 					$lines[] = sprintf(
 						/* translators: 1: relative time such as "3 years", 2: date. */
-						__( 'Latest update release: %1$s ago (%2$s)', 'abandoned-plugin-checker' ),
+						__( 'Latest update release: %1$s ago (%2$s)', 'stalewatch' ),
 						human_time_diff( $eval['last_updated'] ),
 						wp_date( get_option( 'date_format' ), $eval['last_updated'] )
 					);
@@ -101,18 +101,18 @@ final class ABPC_Render {
 
 			case ABPC_Status::NOT_ON_ORG:
 				if ( 'update_uri' === $eval['note'] ) {
-					$lines[] = __( 'Gets updates from another source (Update URI header).', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Gets updates from another source (Update URI header).', 'stalewatch' );
 				} elseif ( 'premium' === $eval['note'] ) {
-					$lines[] = __( 'Not on WordPress.org (premium version?).', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Not on WordPress.org (premium version?).', 'stalewatch' );
 				} else {
-					$lines[] = __( 'Not found on WordPress.org: probably a premium or custom plugin.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Not found on WordPress.org: probably a premium or custom plugin.', 'stalewatch' );
 				}
 				break;
 
 			case ABPC_Status::UNVERIFIED:
 				$lines[] = sprintf(
 					/* translators: 1: plugin slug, 2: name of the WordPress.org plugin. */
-					__( 'The WordPress.org plugin "%1$s" is called "%2$s" and looks like a different plugin, so its data is not used.', 'abandoned-plugin-checker' ),
+					__( 'The WordPress.org plugin "%1$s" is called "%2$s" and looks like a different plugin, so its data is not used.', 'stalewatch' ),
 					$item['slug'],
 					is_array( $record ) && ! empty( $record['name'] ) ? $record['name'] : '?'
 				);
@@ -121,21 +121,21 @@ final class ABPC_Render {
 			case ABPC_Status::UNKNOWN:
 				$lines[] = $eval['error']
 					/* translators: %s: error message. */
-					? sprintf( __( 'Could not reach WordPress.org (%s). It will be retried.', 'abandoned-plugin-checker' ), $eval['error'] )
-					: __( 'Could not read the data from WordPress.org. It will be retried.', 'abandoned-plugin-checker' );
+					? sprintf( __( 'Could not reach WordPress.org (%s). It will be retried.', 'stalewatch' ), $eval['error'] )
+					: __( 'Could not read the data from WordPress.org. It will be retried.', 'stalewatch' );
 				break;
 
 			case ABPC_Status::PENDING:
-				$lines[] = __( 'Waiting for the first check.', 'abandoned-plugin-checker' );
+				$lines[] = __( 'Waiting for the first check.', 'stalewatch' );
 				break;
 
 			case ABPC_Status::SKIPPED:
 				if ( 'inactive' === $eval['note'] ) {
-					$lines[] = __( 'Inactive plugins are excluded in the settings.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Inactive plugins are excluded in the settings.', 'stalewatch' );
 				} elseif ( 'filtered' === $eval['note'] ) {
-					$lines[] = __( 'Excluded by a filter.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'Excluded by a filter.', 'stalewatch' );
 				} else {
-					$lines[] = __( 'No WordPress.org slug could be determined.', 'abandoned-plugin-checker' );
+					$lines[] = __( 'No WordPress.org slug could be determined.', 'stalewatch' );
 				}
 				break;
 		}
@@ -147,7 +147,7 @@ final class ABPC_Render {
 					'Not tested with the last %1$d major WordPress release (tested up to %2$s).',
 					'Not tested with the last %1$d major WordPress releases (tested up to %2$s).',
 					$eval['tested_behind'],
-					'abandoned-plugin-checker'
+					'stalewatch'
 				),
 				$eval['tested_behind'],
 				$record['tested']
@@ -157,12 +157,12 @@ final class ABPC_Render {
 		if ( $eval['stale'] && is_array( $record ) && ! empty( $record['checked_at'] ) ) {
 			$lines[] = sprintf(
 				/* translators: %s: relative time such as "9 days". */
-				__( 'Data out of date: last successful check %s ago.', 'abandoned-plugin-checker' ),
+				__( 'Data out of date: last successful check %s ago.', 'stalewatch' ),
 				human_time_diff( (int) $record['checked_at'] )
 			);
 		} elseif ( ABPC_Status::UNKNOWN !== $eval['status'] && $eval['error'] ) {
 			/* translators: %s: error message. */
-			$lines[] = sprintf( __( 'Last check failed (%s); showing the previous result.', 'abandoned-plugin-checker' ), $eval['error'] );
+			$lines[] = sprintf( __( 'Last check failed (%s); showing the previous result.', 'stalewatch' ), $eval['error'] );
 		}
 
 		return $lines;

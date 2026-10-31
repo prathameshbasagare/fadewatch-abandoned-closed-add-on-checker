@@ -2,7 +2,7 @@
 /**
  * Bootstrap: wires every component to WordPress.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
