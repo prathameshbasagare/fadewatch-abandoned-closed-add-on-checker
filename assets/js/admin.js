@@ -1,17 +1,21 @@
 /**
- * "Check now": runs the scan queue batch by batch from the browser, so it
- * works even when WP-Cron is disabled or broken. No dependencies.
+ * Report page: opt-in dialog and "Check now".
+ *
+ * Runs the scan queue batch by batch from the browser, so checks also work
+ * when WP-Cron is disabled or broken. No dependencies.
  */
 ( function () {
 	'use strict';
 
 	var cfg = window.fadewatchAdmin;
-	var button = document.getElementById( 'fadewatch-check-now' );
 	var box = document.getElementById( 'fadewatch-progress' );
 	var bar = document.getElementById( 'fadewatch-progress-bar' );
 	var text = document.getElementById( 'fadewatch-progress-text' );
+	var checkNow = document.getElementById( 'fadewatch-check-now' );
+	var consentForm = document.getElementById( 'fadewatch-consent-form' );
+	var dialog = document.getElementById( 'fadewatch-consent-dialog' );
 
-	if ( ! cfg || ! button || ! box || ! bar || ! text ) {
+	if ( ! cfg || ! box || ! bar || ! text ) {
 		return;
 	}
 
@@ -65,17 +69,34 @@
 		}
 	}
 
-	async function run( startNew ) {
+	function setDisabled( disabled ) {
+		if ( checkNow ) {
+			checkNow.disabled = disabled;
+		}
+		if ( consentForm ) {
+			Array.prototype.forEach.call( consentForm.querySelectorAll( 'button' ), function ( button ) {
+				button.disabled = disabled;
+			} );
+		}
+	}
+
+	/**
+	 * Runs a scan to completion.
+	 *
+	 * @param {string|null} firstAction AJAX action that starts the scan
+	 *                                  (start or consent), or null to resume.
+	 */
+	async function run( firstAction ) {
 		if ( running ) {
 			return;
 		}
 		running = true;
-		button.disabled = true;
+		setDisabled( true );
 		box.hidden = false;
 		text.textContent = cfg.i18n.starting;
 
 		try {
-			var data = startNew ? await request( 'fadewatch_scan_start' ) : { complete: false };
+			var data = firstAction ? await request( firstAction ) : { complete: false };
 
 			while ( ! data.complete ) {
 				if ( data.busy ) {
@@ -89,18 +110,41 @@
 			window.location.reload();
 		} catch ( error ) {
 			text.textContent = error.message || cfg.i18n.failed;
-			button.disabled = false;
+			setDisabled( false );
 			running = false;
 		}
 	}
 
-	button.addEventListener( 'click', function () {
-		run( true );
-	} );
+	if ( checkNow ) {
+		checkNow.addEventListener( 'click', function () {
+			run( 'fadewatch_scan_start' );
+		} );
+	}
 
-	if ( cfg.resume ) {
-		run( false );
+	// Opt-in. Without JavaScript the form posts to admin-post.php instead.
+	if ( consentForm ) {
+		consentForm.addEventListener( 'submit', function ( event ) {
+			event.preventDefault();
+			if ( dialog && dialog.open ) {
+				dialog.close();
+			}
+			run( 'fadewatch_grant_consent' );
+		} );
+	}
+
+	if ( dialog ) {
+		Array.prototype.forEach.call( dialog.querySelectorAll( '[data-fadewatch-close]' ), function ( button ) {
+			button.addEventListener( 'click', function () {
+				dialog.close();
+			} );
+		} );
+	}
+
+	if ( cfg.askConsent && dialog && typeof dialog.showModal === 'function' ) {
+		dialog.showModal();
+	} else if ( cfg.resume ) {
+		run( null );
 	} else if ( cfg.start ) {
-		run( true );
+		run( 'fadewatch_scan_start' );
 	}
 } )();

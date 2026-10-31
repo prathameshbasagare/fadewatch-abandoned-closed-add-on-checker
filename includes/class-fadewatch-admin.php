@@ -30,6 +30,7 @@ final class Fadewatch_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_action( 'admin_post_fadewatch_save_settings', array( __CLASS__, 'handle_save_settings' ) );
 		add_action( 'admin_post_fadewatch_export_csv', array( __CLASS__, 'handle_export_csv' ) );
+		add_action( 'admin_post_fadewatch_grant_consent', array( __CLASS__, 'handle_grant_consent' ) );
 		add_action( 'admin_init', array( __CLASS__, 'add_privacy_policy_content' ) );
 
 		$basename = plugin_basename( FADEWATCH_FILE );
@@ -86,20 +87,24 @@ final class Fadewatch_Admin {
 
 		wp_enqueue_script( 'fadewatch-admin', FADEWATCH_URL . 'assets/js/admin.js', array(), FADEWATCH_VERSION, true );
 
-		$state = Fadewatch_Store::state();
-		$meta  = Fadewatch_Store::meta();
+		$state   = Fadewatch_Store::state();
+		$meta    = Fadewatch_Store::meta();
+		$allowed = Fadewatch_Settings::checks_allowed();
+		$report  = ! self::is_settings_tab();
 
 		wp_localize_script(
 			'fadewatch-admin',
 			'fadewatchAdmin',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( Fadewatch_Ajax::NONCE ),
+				'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+				'nonce'       => wp_create_nonce( Fadewatch_Ajax::NONCE ),
+				// Ask for consent on the report page until checks are allowed.
+				'askConsent'  => ! $allowed && $report,
 				// Continue an unfinished scan in the browser (covers broken WP-Cron),
 				// or run the very first scan if none has completed yet.
-				'resume'  => ! empty( $state['queue'] ),
-				'start'   => empty( $state['queue'] ) && ! $meta['last_full_scan'] && ! self::is_settings_tab(),
-				'i18n'    => array(
+				'resume'      => $allowed && ! empty( $state['queue'] ),
+				'start'       => $allowed && $report && empty( $state['queue'] ) && ! $meta['last_full_scan'],
+				'i18n'        => array(
 					/* translators: 1: number of checked plugins, 2: total number of plugins. */
 					'progress' => __( 'Checked %1$d of %2$d plugins…', 'fadewatch-abandoned-closed-add-on-checker' ),
 					'waiting'  => __( 'Another check is running. Waiting…', 'fadewatch-abandoned-closed-add-on-checker' ),
@@ -121,7 +126,9 @@ final class Fadewatch_Admin {
 		if ( Fadewatch_Settings::current_user_can() ) {
 			array_unshift(
 				$links,
-				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'fadewatch-abandoned-closed-add-on-checker' ) ),
+				Fadewatch_Settings::checks_allowed()
+					? sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'fadewatch-abandoned-closed-add-on-checker' ) )
+					: sprintf( '<a href="%s"><strong>%s</strong></a>', esc_url( self::page_url() ), esc_html__( 'Allow checks', 'fadewatch-abandoned-closed-add-on-checker' ) ),
 				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url( 'settings' ) ), esc_html__( 'Settings', 'fadewatch-abandoned-closed-add-on-checker' ) )
 			);
 		}
@@ -218,6 +225,11 @@ final class Fadewatch_Admin {
 		);
 
 		$export_url = wp_nonce_url( admin_url( 'admin-post.php?action=fadewatch_export_csv' ), 'fadewatch_export_csv' );
+		$allowed    = Fadewatch_Settings::checks_allowed();
+
+		if ( ! $allowed ) {
+			self::render_consent();
+		}
 		?>
 		<ul class="fadewatch-summary">
 			<?php foreach ( $summary as $status ) : ?>
@@ -244,7 +256,9 @@ final class Fadewatch_Admin {
 				}
 				?>
 			</p>
-			<button type="button" class="button button-primary" id="fadewatch-check-now"><?php esc_html_e( 'Check now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+			<?php if ( $allowed ) : ?>
+				<button type="button" class="button button-primary" id="fadewatch-check-now"><?php esc_html_e( 'Check now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+			<?php endif; ?>
 			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'fadewatch-abandoned-closed-add-on-checker' ); ?></a>
 		</div>
 
@@ -354,6 +368,45 @@ final class Fadewatch_Admin {
 	}
 
 	/**
+	 * Opt-in: an inline panel (works without JavaScript) and a dialog that
+	 * opens automatically. Nothing is sent to WordPress.org until the
+	 * administrator clicks "Allow checks and scan now".
+	 */
+	private static function render_consent() {
+		?>
+		<div class="fadewatch-consent">
+			<p>
+				<strong><?php esc_html_e( 'Checks are off.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></strong>
+				<?php esc_html_e( 'Fadewatch needs your permission before it looks up your plugins on WordPress.org.', 'fadewatch-abandoned-closed-add-on-checker' ); ?>
+			</p>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="fadewatch-consent-form">
+				<input type="hidden" name="action" value="fadewatch_grant_consent" />
+				<?php wp_nonce_field( 'fadewatch_grant_consent' ); ?>
+				<button type="submit" class="button button-primary"><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+			</form>
+		</div>
+
+		<dialog id="fadewatch-consent-dialog" class="fadewatch-dialog" aria-labelledby="fadewatch-consent-title" aria-describedby="fadewatch-consent-desc">
+			<h2 id="fadewatch-consent-title"><?php esc_html_e( 'Allow Fadewatch to check your plugins?', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
+			<p id="fadewatch-consent-desc"><?php esc_html_e( 'To show whether your plugins are maintained, closed or abandoned, Fadewatch looks them up in the WordPress.org Plugins API (api.wordpress.org).', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+			<ul class="fadewatch-dialog__list">
+				<li><?php esc_html_e( 'Only the slug (folder name) of each installed plugin is sent.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+				<li><?php esc_html_e( 'No personal data and not your site address.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+				<li><?php esc_html_e( 'Checks run once a day, after a plugin is installed, updated or activated, and when you click "Check now".', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+				<li><?php esc_html_e( 'You can turn checks off at any time in the settings.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+			</ul>
+			<p>
+				<a href="https://wordpress.org/about/privacy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'WordPress.org privacy policy', 'fadewatch-abandoned-closed-add-on-checker' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-add-on-checker' ); ?></span></a>
+			</p>
+			<div class="fadewatch-dialog__actions">
+				<button type="submit" form="fadewatch-consent-form" class="button button-primary" autofocus><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+				<button type="button" class="button" data-fadewatch-close><?php esc_html_e( 'Not now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+			</div>
+		</dialog>
+		<?php
+	}
+
+	/**
 	 * Settings tab.
 	 */
 	private static function render_settings() {
@@ -385,6 +438,13 @@ final class Fadewatch_Admin {
 
 			<h2><?php esc_html_e( 'What to check', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'WordPress.org checks', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="fadewatch_allow_checks" value="1" <?php checked( $s['allow_checks'] ); ?> aria-describedby="fadewatch_allow_checks_desc" /> <?php esc_html_e( 'Allow Fadewatch to look up installed plugins on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
+						<p class="description" id="fadewatch_allow_checks_desc"><?php esc_html_e( 'Only plugin slugs are sent to api.wordpress.org. When this is off, Fadewatch makes no external requests.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+					</td>
+				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
 					<td>
@@ -465,17 +525,41 @@ final class Fadewatch_Admin {
 				'include_inactive'    => self::posted_checkbox( 'fadewatch_include_inactive' ),
 				'skip_local'          => self::posted_checkbox( 'fadewatch_skip_local' ),
 				'delete_on_uninstall' => self::posted_checkbox( 'fadewatch_delete_on_uninstall' ),
+				'allow_checks'        => self::posted_checkbox( 'fadewatch_allow_checks' ),
 				'notify'              => isset( $_POST['fadewatch_notify'] ) ? sanitize_key( wp_unslash( $_POST['fadewatch_notify'] ) ) : '',
 				'recipients'          => isset( $_POST['fadewatch_recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['fadewatch_recipients'] ) ) : '',
 			)
 		);
 
-		// Newly included inactive plugins need data.
-		if ( $saved['include_inactive'] && ! $before['include_inactive'] ) {
+		if ( $saved['allow_checks'] && ! $before['allow_checks'] ) {
+			// Consent given from the settings screen.
+			Fadewatch_Settings::grant_consent();
+			Fadewatch_Scanner::start_full_scan( 'consent' );
+		} elseif ( ! $saved['allow_checks'] && $before['allow_checks'] ) {
+			// Consent withdrawn: drop anything still queued.
+			Fadewatch_Store::save_state( array() );
+		} elseif ( $saved['include_inactive'] && ! $before['include_inactive'] ) {
+			// Newly included inactive plugins need data.
 			Fadewatch_Scanner::start_full_scan( 'settings' );
 		}
 
 		wp_safe_redirect( add_query_arg( 'fadewatch_saved', '1', self::page_url( 'settings' ) ) );
+		exit;
+	}
+
+	/**
+	 * Consent form fallback for browsers without JavaScript.
+	 */
+	public static function handle_grant_consent() {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-add-on-checker' ), 403 );
+		}
+		check_admin_referer( 'fadewatch_grant_consent' );
+
+		Fadewatch_Settings::grant_consent();
+		Fadewatch_Scanner::start_full_scan( 'consent' );
+
+		wp_safe_redirect( self::page_url() );
 		exit;
 	}
 

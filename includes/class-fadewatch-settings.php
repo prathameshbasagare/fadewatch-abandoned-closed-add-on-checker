@@ -38,6 +38,9 @@ final class Fadewatch_Settings {
 			'recipients'          => '',
 			'skip_local'          => false,
 			'delete_on_uninstall' => true,
+			// Opt-in (Guideline 7): nothing is sent to WordPress.org until an
+			// administrator allows it.
+			'allow_checks'        => false,
 		);
 	}
 
@@ -92,13 +95,36 @@ final class Fadewatch_Settings {
 		$out['include_inactive']    = ! empty( $input['include_inactive'] );
 		$out['skip_local']          = ! empty( $input['skip_local'] );
 		$out['delete_on_uninstall'] = ! empty( $input['delete_on_uninstall'] );
+		$out['allow_checks']        = ! empty( $input['allow_checks'] );
 
-		$notify        = isset( $input['notify'] ) ? sanitize_key( $input['notify'] ) : $defaults['notify'];
+		$notify       = isset( $input['notify'] ) ? sanitize_key( $input['notify'] ) : $defaults['notify'];
 		$out['notify'] = in_array( $notify, array( 'off', 'changes', 'weekly' ), true ) ? $notify : $defaults['notify'];
 
 		$out['recipients'] = isset( $input['recipients'] ) ? self::sanitize_recipients( (string) $input['recipients'] ) : '';
 
 		return $out;
+	}
+
+	/**
+	 * Whether an administrator has allowed checks against WordPress.org.
+	 *
+	 * @return bool
+	 */
+	public static function checks_allowed() {
+		return (bool) self::get( 'allow_checks' );
+	}
+
+	/**
+	 * Records an administrator's consent and turns checks on.
+	 */
+	public static function grant_consent() {
+		self::update( array_merge( self::get(), array( 'allow_checks' => true ) ) );
+		Fadewatch_Store::update_meta(
+			array(
+				'consent_by' => get_current_user_id(),
+				'consent_at' => time(),
+			)
+		);
 	}
 
 	/**
