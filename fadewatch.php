@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Fadewatch – Abandoned & Closed Plugin Checker
+ * Plugin Name:       Fadewatch – Abandoned & Closed Add-on Checker
  * Description:       Shows which installed plugins have been closed on WordPress.org (and why), which haven't been updated in years, and which can't be checked.
  * Version:           1.0.0
  * Requires at least: 6.4
