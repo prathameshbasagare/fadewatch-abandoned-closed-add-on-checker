@@ -2,7 +2,7 @@
 /**
  * Works out which WordPress.org plugin each installed plugin corresponds to.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;

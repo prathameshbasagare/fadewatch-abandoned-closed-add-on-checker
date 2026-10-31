@@ -2,7 +2,7 @@
 /**
  * WordPress.org Plugins API client.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -30,7 +30,7 @@ final class ABPC_API {
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 2,
 				// Deliberately omits the site URL that the default user agent includes.
-				'user-agent'  => 'Stalewatch/' . ABPC_VERSION,
+				'user-agent'  => 'Fadewatch/' . ABPC_VERSION,
 				'headers'     => array( 'Accept' => 'application/json' ),
 			)
 		);
@@ -96,7 +96,7 @@ final class ABPC_API {
 			if ( is_array( $data ) && ! isset( $data['error'] ) && ! empty( $data['slug'] ) ) {
 				return self::normalise_ok( $data );
 			}
-			return self::error( __( 'WordPress.org returned an unexpected response.', 'stalewatch' ) );
+			return self::error( __( 'WordPress.org returned an unexpected response.', 'fadewatch' ) );
 		}
 
 		if ( 404 === $code && is_array( $data ) ) {
@@ -109,12 +109,12 @@ final class ABPC_API {
 		}
 
 		if ( 429 === $code ) {
-			return self::error( __( 'WordPress.org rate limit reached.', 'stalewatch' ) );
+			return self::error( __( 'WordPress.org rate limit reached.', 'fadewatch' ) );
 		}
 
 		return self::error(
 			/* translators: %d: HTTP status code. */
-			sprintf( __( 'WordPress.org returned HTTP %d.', 'stalewatch' ), $code )
+			sprintf( __( 'WordPress.org returned HTTP %d.', 'fadewatch' ), $code )
 		);
 	}
 

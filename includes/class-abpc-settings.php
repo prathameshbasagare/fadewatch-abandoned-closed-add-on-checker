@@ -2,7 +2,7 @@
 /**
  * Settings storage, defaults and sanitisation.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;

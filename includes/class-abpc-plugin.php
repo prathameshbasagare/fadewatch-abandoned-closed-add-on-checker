@@ -2,7 +2,7 @@
 /**
  * Bootstrap: wires every component to WordPress.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;
