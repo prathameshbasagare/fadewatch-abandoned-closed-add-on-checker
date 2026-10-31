@@ -1,6 +1,6 @@
 === Fadewatch – Abandoned & Closed Add-on Checker ===
 Contributors: curiouswpdev
-Tags: abandoned plugins, closed plugins, plugin maintenance, site health, security
+Tags: abandoned plugins, plugin maintenance, plugins, site health, security
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
