@@ -2,7 +2,7 @@
 /**
  * Site Health tests.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -27,11 +27,11 @@ final class ABPC_Site_Health {
 	 */
 	public static function register_tests( $tests ) {
 		$tests['direct']['abpc_closed_plugins'] = array(
-			'label' => __( 'Installed plugins closed on WordPress.org', 'stalewatch' ),
+			'label' => __( 'Installed plugins closed on WordPress.org', 'fadewatch' ),
 			'test'  => array( __CLASS__, 'test_closed' ),
 		);
 		$tests['direct']['abpc_abandoned_plugins'] = array(
-			'label' => __( 'Plugins without updates for a long time', 'stalewatch' ),
+			'label' => __( 'Plugins without updates for a long time', 'fadewatch' ),
 			'test'  => array( __CLASS__, 'test_abandoned' ),
 		);
 		return $tests;
@@ -56,9 +56,9 @@ final class ABPC_Site_Health {
 				'abpc_closed_plugins',
 				'good',
 				self::has_data()
-					? __( 'No installed plugins have been closed on WordPress.org', 'stalewatch' )
-					: __( 'Plugin maintenance status has not been checked yet', 'stalewatch' ),
-				__( 'Plugins closed on WordPress.org no longer receive updates, including security fixes.', 'stalewatch' ),
+					? __( 'No installed plugins have been closed on WordPress.org', 'fadewatch' )
+					: __( 'Plugin maintenance status has not been checked yet', 'fadewatch' ),
+				__( 'Plugins closed on WordPress.org no longer receive updates, including security fixes.', 'fadewatch' ),
 				array()
 			);
 		}
@@ -73,10 +73,10 @@ final class ABPC_Site_Health {
 			$security ? 'critical' : 'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
-				_n( '%d installed plugin has been closed on WordPress.org', '%d installed plugins have been closed on WordPress.org', count( $closed ), 'stalewatch' ),
+				_n( '%d installed plugin has been closed on WordPress.org', '%d installed plugins have been closed on WordPress.org', count( $closed ), 'fadewatch' ),
 				count( $closed )
 			),
-			__( 'Closed plugins no longer receive updates, including security fixes. Replace them with maintained alternatives.', 'stalewatch' ),
+			__( 'Closed plugins no longer receive updates, including security fixes. Replace them with maintained alternatives.', 'fadewatch' ),
 			$list
 		);
 	}
@@ -92,7 +92,7 @@ final class ABPC_Site_Health {
 
 		$description = sprintf(
 			/* translators: %d: number of months. */
-			_n( 'Plugins that have not been updated in over %d month may no longer be maintained.', 'Plugins that have not been updated in over %d months may no longer be maintained.', $thresholds['abandoned'], 'stalewatch' ),
+			_n( 'Plugins that have not been updated in over %d month may no longer be maintained.', 'Plugins that have not been updated in over %d months may no longer be maintained.', $thresholds['abandoned'], 'fadewatch' ),
 			$thresholds['abandoned']
 		);
 
@@ -100,7 +100,7 @@ final class ABPC_Site_Health {
 			return self::result(
 				'abpc_abandoned_plugins',
 				'good',
-				__( 'All checked plugins have been updated recently', 'stalewatch' ),
+				__( 'All checked plugins have been updated recently', 'fadewatch' ),
 				$description,
 				array()
 			);
@@ -110,7 +110,7 @@ final class ABPC_Site_Health {
 		foreach ( $rows as $row ) {
 			$list[] = sprintf(
 				/* translators: 1: plugin name, 2: date. */
-				__( '%1$s (latest update release: %2$s)', 'stalewatch' ),
+				__( '%1$s (latest update release: %2$s)', 'fadewatch' ),
 				$row['item']['name'],
 				wp_date( get_option( 'date_format' ), $row['eval']['last_updated'] )
 			);
@@ -121,7 +121,7 @@ final class ABPC_Site_Health {
 			'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
-				_n( '%d plugin may be abandoned', '%d plugins may be abandoned', count( $rows ), 'stalewatch' ),
+				_n( '%d plugin may be abandoned', '%d plugins may be abandoned', count( $rows ), 'fadewatch' ),
 				count( $rows )
 			),
 			$description,
@@ -154,7 +154,7 @@ final class ABPC_Site_Health {
 			$actions = sprintf(
 				'<p><a href="%1$s">%2$s</a></p>',
 				esc_url( ABPC_Admin::page_url() ),
-				esc_html__( 'View the plugin maintenance report', 'stalewatch' )
+				esc_html__( 'View the plugin maintenance report', 'fadewatch' )
 			);
 		}
 
@@ -162,7 +162,7 @@ final class ABPC_Site_Health {
 			'label'       => $label,
 			'status'      => $status,
 			'badge'       => array(
-				'label' => __( 'Security', 'stalewatch' ),
+				'label' => __( 'Security', 'fadewatch' ),
 				'color' => 'critical' === $status ? 'red' : 'blue',
 			),
 			'description' => $html,

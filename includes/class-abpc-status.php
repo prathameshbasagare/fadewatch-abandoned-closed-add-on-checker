@@ -2,7 +2,7 @@
 /**
  * Status model: turns stored data into exactly one status per plugin.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -54,15 +54,15 @@ final class ABPC_Status {
 	 */
 	public static function labels() {
 		return array(
-			self::MAINTAINED => __( 'Maintained', 'stalewatch' ),
-			self::AGEING     => __( 'Ageing', 'stalewatch' ),
-			self::ABANDONED  => __( 'Possibly abandoned', 'stalewatch' ),
-			self::CLOSED     => __( 'Closed', 'stalewatch' ),
-			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'stalewatch' ),
-			self::UNKNOWN    => __( "Couldn't check", 'stalewatch' ),
-			self::UNVERIFIED => __( 'Not verified', 'stalewatch' ),
-			self::PENDING    => __( 'Not checked yet', 'stalewatch' ),
-			self::SKIPPED    => __( 'Not checked', 'stalewatch' ),
+			self::MAINTAINED => __( 'Maintained', 'fadewatch' ),
+			self::AGEING     => __( 'Ageing', 'fadewatch' ),
+			self::ABANDONED  => __( 'Possibly abandoned', 'fadewatch' ),
+			self::CLOSED     => __( 'Closed', 'fadewatch' ),
+			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'fadewatch' ),
+			self::UNKNOWN    => __( "Couldn't check", 'fadewatch' ),
+			self::UNVERIFIED => __( 'Not verified', 'fadewatch' ),
+			self::PENDING    => __( 'Not checked yet', 'fadewatch' ),
+			self::SKIPPED    => __( 'Not checked', 'fadewatch' ),
 		);
 	}
 

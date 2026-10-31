@@ -3,7 +3,7 @@
  * Uninstall: removes scheduled events and (unless the admin chose to keep
  * it) all stored data.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;

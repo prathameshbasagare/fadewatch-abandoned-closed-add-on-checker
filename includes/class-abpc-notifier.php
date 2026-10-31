@@ -2,7 +2,7 @@
 /**
  * Plain-text e-mail notifications.
  *
- * @package Stalewatch
+ * @package Fadewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -38,12 +38,12 @@ final class ABPC_Notifier {
 
 		$lines = array(
 			/* translators: %s: site or network name. */
-			sprintf( __( 'Stalewatch found changes on %s:', 'stalewatch' ), self::site_name() ),
+			sprintf( __( 'Fadewatch found changes on %s:', 'fadewatch' ), self::site_name() ),
 			'',
 		);
 
 		if ( $groups['closed'] ) {
-			$lines[] = __( 'Closed on WordPress.org:', 'stalewatch' );
+			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch' );
 			foreach ( $groups['closed'] as $change ) {
 				$lines[] = '- ' . self::closed_line( $change );
 			}
@@ -54,7 +54,7 @@ final class ABPC_Notifier {
 			$thresholds = ABPC_Settings::thresholds();
 			$lines[]    = sprintf(
 				/* translators: %d: number of months. */
-				_n( 'Possibly abandoned (no update in over %d month):', 'Possibly abandoned (no update in over %d months):', $thresholds['abandoned'], 'stalewatch' ),
+				_n( 'Possibly abandoned (no update in over %d month):', 'Possibly abandoned (no update in over %d months):', $thresholds['abandoned'], 'fadewatch' ),
 				$thresholds['abandoned']
 			);
 			foreach ( $groups['abandoned'] as $change ) {
@@ -64,7 +64,7 @@ final class ABPC_Notifier {
 		}
 
 		if ( $groups['reopened'] ) {
-			$lines[] = __( 'Reopened on WordPress.org:', 'stalewatch' );
+			$lines[] = __( 'Reopened on WordPress.org:', 'fadewatch' );
 			foreach ( $groups['reopened'] as $change ) {
 				$lines[] = '- ' . self::name_line( $change );
 			}
@@ -77,7 +77,7 @@ final class ABPC_Notifier {
 
 		$subject = sprintf(
 			/* translators: %s: site or network name. */
-			__( '[%s] Plugin maintenance changes', 'stalewatch' ),
+			__( '[%s] Plugin maintenance changes', 'fadewatch' ),
 			self::site_name()
 		);
 
@@ -97,17 +97,17 @@ final class ABPC_Notifier {
 
 		$subject = sprintf(
 			/* translators: 1: site or network name, 2: plugin name. */
-			__( '[%1$s] Security alert: %2$s was closed on WordPress.org', 'stalewatch' ),
+			__( '[%1$s] Security alert: %2$s was closed on WordPress.org', 'fadewatch' ),
 			self::site_name(),
 			$change['name']
 		);
 
 		$lines = array(
-			__( 'An installed plugin was closed on WordPress.org because of a security issue:', 'stalewatch' ),
+			__( 'An installed plugin was closed on WordPress.org because of a security issue:', 'fadewatch' ),
 			'',
 			'- ' . self::closed_line( $change ),
 			'',
-			__( 'Closed plugins no longer receive updates. Deactivate it and replace it with a maintained alternative as soon as possible.', 'stalewatch' ),
+			__( 'Closed plugins no longer receive updates. Deactivate it and replace it with a maintained alternative as soon as possible.', 'fadewatch' ),
 			'',
 		);
 
@@ -148,18 +148,18 @@ final class ABPC_Notifier {
 
 		$lines = array(
 			/* translators: %s: site or network name. */
-			sprintf( __( 'Weekly plugin maintenance summary for %s:', 'stalewatch' ), self::site_name() ),
+			sprintf( __( 'Weekly plugin maintenance summary for %s:', 'fadewatch' ), self::site_name() ),
 			'',
 		);
 		if ( $closed ) {
-			$lines[] = __( 'Closed on WordPress.org:', 'stalewatch' );
+			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch' );
 			foreach ( $closed as $line ) {
 				$lines[] = '- ' . $line;
 			}
 			$lines[] = '';
 		}
 		if ( $abandoned ) {
-			$lines[] = __( 'Possibly abandoned:', 'stalewatch' );
+			$lines[] = __( 'Possibly abandoned:', 'fadewatch' );
 			foreach ( $abandoned as $line ) {
 				$lines[] = '- ' . $line;
 			}
@@ -168,7 +168,7 @@ final class ABPC_Notifier {
 
 		$subject = sprintf(
 			/* translators: %s: site or network name. */
-			__( '[%s] Weekly plugin maintenance summary', 'stalewatch' ),
+			__( '[%s] Weekly plugin maintenance summary', 'fadewatch' ),
 			self::site_name()
 		);
 
@@ -188,9 +188,9 @@ final class ABPC_Notifier {
 			return false;
 		}
 
-		$lines[] = __( 'Full report:', 'stalewatch' ) . ' ' . ABPC_Admin::page_url();
+		$lines[] = __( 'Full report:', 'fadewatch' ) . ' ' . ABPC_Admin::page_url();
 		$lines[] = '';
-		$lines[] = __( 'You receive this e-mail because notifications are enabled in Stalewatch. Change this here:', 'stalewatch' ) . ' ' . ABPC_Admin::page_url( 'settings' );
+		$lines[] = __( 'You receive this e-mail because notifications are enabled in Fadewatch. Change this here:', 'fadewatch' ) . ' ' . ABPC_Admin::page_url( 'settings' );
 
 		return wp_mail( $recipients, $subject, implode( "\n", $lines ) );
 	}
@@ -205,11 +205,11 @@ final class ABPC_Notifier {
 		$parts = array( self::name_line( $change ) );
 		if ( ! empty( $change['closed_date'] ) ) {
 			/* translators: %s: date. */
-			$parts[] = sprintf( __( 'closed on %s', 'stalewatch' ), ABPC_Render::format_ymd( $change['closed_date'] ) );
+			$parts[] = sprintf( __( 'closed on %s', 'fadewatch' ), ABPC_Render::format_ymd( $change['closed_date'] ) );
 		}
 		if ( ! empty( $change['reason_text'] ) ) {
 			/* translators: %s: closure reason, e.g. "Security Issue". */
-			$parts[] = sprintf( __( 'reason: %s', 'stalewatch' ), $change['reason_text'] );
+			$parts[] = sprintf( __( 'reason: %s', 'fadewatch' ), $change['reason_text'] );
 		}
 		return implode( ', ', $parts );
 	}
@@ -226,7 +226,7 @@ final class ABPC_Notifier {
 		}
 		return sprintf(
 			/* translators: 1: plugin name and slug, 2: date. */
-			__( '%1$s, latest update release: %2$s', 'stalewatch' ),
+			__( '%1$s, latest update release: %2$s', 'fadewatch' ),
 			self::name_line( $change ),
 			wp_date( get_option( 'date_format' ), (int) $change['last_updated'] )
 		);
