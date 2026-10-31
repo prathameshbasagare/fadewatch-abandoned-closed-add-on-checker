@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Status.
  */
-final class ABPC_Status {
+final class Fadewatch_Status {
 
 	const MAINTAINED = 'maintained';
 	const AGEING     = 'ageing';
@@ -98,7 +98,7 @@ final class ABPC_Status {
 	/**
 	 * Computes the status of one installed plugin.
 	 *
-	 * @param array      $item    Installed plugin (from ABPC_Resolver).
+	 * @param array      $item    Installed plugin (from Fadewatch_Resolver).
 	 * @param array|null $record  Stored WordPress.org data, if any.
 	 * @param array      $context {
 	 *     @type array  $thresholds  Thresholds in months.
@@ -333,7 +333,7 @@ final class ABPC_Status {
 	}
 
 	/**
-	 * Applies the public `abpc_status` filter and validates the result.
+	 * Applies the public `fadewatch_status` filter and validates the result.
 	 *
 	 * @param array      $out    Evaluation.
 	 * @param array      $item   Installed plugin.
@@ -348,7 +348,7 @@ final class ABPC_Status {
 		 * @param array      $item   Installed plugin data.
 		 * @param array|null $record Stored WordPress.org data.
 		 */
-		$filtered = apply_filters( 'abpc_status', $out, $item, $record );
+		$filtered = apply_filters( 'fadewatch_status', $out, $item, $record );
 
 		if ( is_array( $filtered ) && isset( $filtered['status'] ) && in_array( $filtered['status'], self::all(), true ) ) {
 			return array_merge( $out, $filtered );

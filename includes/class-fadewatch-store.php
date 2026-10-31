@@ -14,13 +14,13 @@ defined( 'ABSPATH' ) || exit;
  * regular options with autoload disabled, so nothing is loaded on the
  * front end.
  */
-final class ABPC_Store {
+final class Fadewatch_Store {
 
-	const RESULTS = 'abpc_results';
-	const STATE   = 'abpc_scan_state';
-	const META    = 'abpc_meta';
-	const CHANGES = 'abpc_pending_changes';
-	const LOCK    = 'abpc_scan_lock';
+	const RESULTS = 'fadewatch_results';
+	const STATE   = 'fadewatch_scan_state';
+	const META    = 'fadewatch_meta';
+	const CHANGES = 'fadewatch_pending_changes';
+	const LOCK    = 'fadewatch_scan_lock';
 
 	/**
 	 * All option names, used by uninstall.php.
@@ -28,7 +28,7 @@ final class ABPC_Store {
 	 * @return string[]
 	 */
 	public static function option_names() {
-		return array( ABPC_Settings::OPTION, self::RESULTS, self::STATE, self::META, self::CHANGES );
+		return array( Fadewatch_Settings::OPTION, self::RESULTS, self::STATE, self::META, self::CHANGES );
 	}
 
 	/**

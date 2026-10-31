@@ -47,26 +47,26 @@ Every installed plugin gets exactly one status:
 
 | Filter | Purpose |
 |---|---|
-| `abpc_plugin_slug( $slug, $file, $data )` | Map a plugin file to a different WordPress.org slug. |
-| `abpc_skip_plugin( $skip, $file, $data )` | Exclude a plugin from checks. |
-| `abpc_thresholds( $thresholds )` | Change the `ageing` / `abandoned` thresholds (in months). |
-| `abpc_status( $evaluation, $item, $record )` | Override the computed status. |
-| `abpc_email_recipients( $recipients )` | Change notification recipients. |
+| `fadewatch_plugin_slug( $slug, $file, $data )` | Map a plugin file to a different WordPress.org slug. |
+| `fadewatch_skip_plugin( $skip, $file, $data )` | Exclude a plugin from checks. |
+| `fadewatch_thresholds( $thresholds )` | Change the `ageing` / `abandoned` thresholds (in months). |
+| `fadewatch_status( $evaluation, $item, $record )` | Override the computed status. |
+| `fadewatch_email_recipients( $recipients )` | Change notification recipients. |
 
 ### Actions
 
 | Action | Fires when |
 |---|---|
-| `abpc_status_changed( $plugin_file, $old_status, $new_status, $evaluation )` | A plugin's status changes. |
-| `abpc_scan_started( $source )` | A full scan is queued (`activation`, `cron`, `manual`, `fallback`, `settings`). |
-| `abpc_scan_completed( $results )` | The scan queue has been fully processed. |
+| `fadewatch_status_changed( $plugin_file, $old_status, $new_status, $evaluation )` | A plugin's status changes. |
+| `fadewatch_scan_started( $source )` | A full scan is queued (`activation`, `cron`, `manual`, `fallback`, `settings`). |
+| `fadewatch_scan_completed( $results )` | The scan queue has been fully processed. |
 
 ### Example
 
 Map a plugin whose folder name differs from its WordPress.org slug:
 
 ```php
-add_filter( 'abpc_plugin_slug', function ( $slug, $file ) {
+add_filter( 'fadewatch_plugin_slug', function ( $slug, $file ) {
 	return 'my-renamed-folder/plugin.php' === $file ? 'original-wporg-slug' : $slug;
 }, 10, 2 );
 ```
@@ -77,18 +77,18 @@ add_filter( 'abpc_plugin_slug', function ( $slug, $file ) {
 fadewatch.php                      Bootstrap, constants, activation hooks
 uninstall.php                      Removes options and scheduled events
 includes/
-  class-abpc-api.php               WordPress.org Plugins API client and response parsing
-  class-abpc-resolver.php          Installed plugin → WordPress.org slug (Update URI, single-file plugins)
-  class-abpc-status.php            Status model, thresholds, slug-collision guard
-  class-abpc-scanner.php           Queue, batches, locking, cron, change detection
-  class-abpc-store.php             Persistent storage (non-autoloaded network options)
-  class-abpc-report.php            Evaluated rows for every screen
-  class-abpc-notifier.php          Plain-text e-mails
-  class-abpc-admin.php             Report and settings page, CSV export
-  class-abpc-plugins-screen.php    Plugins screen column, filters and sorting
-  class-abpc-site-health.php       Site Health tests
-  class-abpc-ajax.php              "Check now" endpoints
-  class-abpc-render.php            Shared output helpers
+  class-fadewatch-api.php               WordPress.org Plugins API client and response parsing
+  class-fadewatch-resolver.php          Installed plugin → WordPress.org slug (Update URI, single-file plugins)
+  class-fadewatch-status.php            Status model, thresholds, slug-collision guard
+  class-fadewatch-scanner.php           Queue, batches, locking, cron, change detection
+  class-fadewatch-store.php             Persistent storage (non-autoloaded network options)
+  class-fadewatch-report.php            Evaluated rows for every screen
+  class-fadewatch-notifier.php          Plain-text e-mails
+  class-fadewatch-admin.php             Report and settings page, CSV export
+  class-fadewatch-plugins-screen.php    Plugins screen column, filters and sorting
+  class-fadewatch-site-health.php       Site Health tests
+  class-fadewatch-ajax.php              "Check now" endpoints
+  class-fadewatch-render.php            Shared output helpers
 assets/                            Admin CSS and dependency-free JS
 ```
 

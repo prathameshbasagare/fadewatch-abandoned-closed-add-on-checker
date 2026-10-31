@@ -1,6 +1,6 @@
 /* Fadewatch: admin styles. Loaded on the Plugins screen and the report page only. */
 
-.abpc-badge {
+.fadewatch-badge {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
@@ -13,59 +13,59 @@
 	background: #fff;
 }
 
-.abpc-badge .dashicons {
+.fadewatch-badge .dashicons {
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
 }
 
-.abpc-detail {
+.fadewatch-detail {
 	display: block;
 	margin-top: 4px;
 	color: #50575e;
 }
 
-.abpc-detail-inline {
+.fadewatch-detail-inline {
 	color: #50575e;
 }
 
 /* Status colours (WordPress admin palette; all meet WCAG AA on white). */
-.abpc-status--maintained { color: #007017; }
-.abpc-status--ageing { color: #8a6100; }
-.abpc-status--abandoned { color: #b32d2e; }
-.abpc-status--closed { color: #8a2424; }
-.abpc-status--not_on_org,
-.abpc-status--unverified,
-.abpc-status--pending,
-.abpc-status--skipped { color: #50575e; }
-.abpc-status--unknown { color: #2c3338; }
+.fadewatch-status--maintained { color: #007017; }
+.fadewatch-status--ageing { color: #8a6100; }
+.fadewatch-status--abandoned { color: #b32d2e; }
+.fadewatch-status--closed { color: #8a2424; }
+.fadewatch-status--not_on_org,
+.fadewatch-status--unverified,
+.fadewatch-status--pending,
+.fadewatch-status--skipped { color: #50575e; }
+.fadewatch-status--unknown { color: #2c3338; }
 
-.abpc-badge.abpc-status--closed {
+.fadewatch-badge.fadewatch-status--closed {
 	background: #fcf0f1;
 }
 
-.abpc-badge.abpc-severity--critical {
+.fadewatch-badge.fadewatch-severity--critical {
 	background: #8a2424;
 	border-color: #8a2424;
 	color: #fff;
 }
 
 /* Plugins screen: coloured left border on closed / possibly abandoned rows. */
-.plugins tr:has(.abpc-status--closed) > .check-column,
-.plugins tr:has(.abpc-status--abandoned) > .check-column {
+.plugins tr:has(.fadewatch-status--closed) > .check-column,
+.plugins tr:has(.fadewatch-status--abandoned) > .check-column {
 	border-left: 4px solid #d63638;
 }
 
-.plugins tr:has(.abpc-status--abandoned) > .check-column {
+.plugins tr:has(.fadewatch-status--abandoned) > .check-column {
 	border-left-color: #dba617;
 }
 
-.plugins .column-abpc_maintenance {
+.plugins .column-fadewatch_maintenance {
 	width: 20%;
 }
 
 /* Report page. */
-.abpc-summary {
+.fadewatch-summary {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px;
@@ -74,7 +74,7 @@
 	list-style: none;
 }
 
-.abpc-summary__item {
+.fadewatch-summary__item {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	align-items: center;
@@ -88,25 +88,25 @@
 	border-left-color: currentColor;
 }
 
-.abpc-summary__item .dashicons {
+.fadewatch-summary__item .dashicons {
 	grid-row: span 2;
 	font-size: 24px;
 	width: 24px;
 	height: 24px;
 }
 
-.abpc-summary__count {
+.fadewatch-summary__count {
 	font-size: 22px;
 	font-weight: 600;
 	line-height: 1.2;
 	color: #1d2327;
 }
 
-.abpc-summary__label {
+.fadewatch-summary__label {
 	color: #1d2327;
 }
 
-.abpc-toolbar {
+.fadewatch-toolbar {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -114,39 +114,39 @@
 	margin-bottom: 12px;
 }
 
-.abpc-toolbar__meta {
+.fadewatch-toolbar__meta {
 	flex: 1 1 auto;
 	margin: 0;
 }
 
-.abpc-progress {
+.fadewatch-progress {
 	margin: 0 0 16px;
 }
 
-.abpc-progress[hidden] {
+.fadewatch-progress[hidden] {
 	display: none;
 }
 
-.abpc-progress progress {
+.fadewatch-progress progress {
 	width: 100%;
 	max-width: 480px;
 	height: 16px;
 }
 
-.abpc-progress__text {
+.fadewatch-progress__text {
 	margin: 4px 0 0;
 }
 
-.abpc-table td,
-.abpc-table th {
+.fadewatch-table td,
+.fadewatch-table th {
 	vertical-align: top;
 }
 
-.abpc-table .abpc-table__plugin {
+.fadewatch-table .fadewatch-table__plugin {
 	min-width: 180px;
 }
 
-.abpc-extras {
+.fadewatch-extras {
 	list-style: disc;
 	padding-left: 20px;
 }

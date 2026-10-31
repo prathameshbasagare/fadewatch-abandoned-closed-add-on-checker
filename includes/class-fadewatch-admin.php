@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Admin page.
  */
-final class ABPC_Admin {
+final class Fadewatch_Admin {
 
 	const PAGE = 'fadewatch';
 
@@ -28,11 +28,11 @@ final class ABPC_Admin {
 	public static function register_hooks() {
 		add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
-		add_action( 'admin_post_abpc_save_settings', array( __CLASS__, 'handle_save_settings' ) );
-		add_action( 'admin_post_abpc_export_csv', array( __CLASS__, 'handle_export_csv' ) );
+		add_action( 'admin_post_fadewatch_save_settings', array( __CLASS__, 'handle_save_settings' ) );
+		add_action( 'admin_post_fadewatch_export_csv', array( __CLASS__, 'handle_export_csv' ) );
 		add_action( 'admin_init', array( __CLASS__, 'add_privacy_policy_content' ) );
 
-		$basename = plugin_basename( ABPC_FILE );
+		$basename = plugin_basename( FADEWATCH_FILE );
 		add_filter( 'plugin_action_links_' . $basename, array( __CLASS__, 'action_links' ) );
 		add_filter( 'network_admin_plugin_action_links_' . $basename, array( __CLASS__, 'action_links' ) );
 	}
@@ -59,9 +59,9 @@ final class ABPC_Admin {
 		$title = __( 'Plugin Maintenance', 'fadewatch' );
 
 		if ( is_multisite() ) {
-			self::$hook = (string) add_submenu_page( 'plugins.php', $title, $title, ABPC_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
+			self::$hook = (string) add_submenu_page( 'plugins.php', $title, $title, Fadewatch_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
 		} else {
-			self::$hook = (string) add_management_page( $title, $title, ABPC_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
+			self::$hook = (string) add_management_page( $title, $title, Fadewatch_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
 		}
 	}
 
@@ -78,23 +78,23 @@ final class ABPC_Admin {
 			return;
 		}
 
-		wp_enqueue_style( 'abpc-admin', ABPC_URL . 'assets/css/admin.css', array( 'dashicons' ), ABPC_VERSION );
+		wp_enqueue_style( 'fadewatch-admin', FADEWATCH_URL . 'assets/css/admin.css', array( 'dashicons' ), FADEWATCH_VERSION );
 
 		if ( ! $is_page ) {
 			return;
 		}
 
-		wp_enqueue_script( 'abpc-admin', ABPC_URL . 'assets/js/admin.js', array(), ABPC_VERSION, true );
+		wp_enqueue_script( 'fadewatch-admin', FADEWATCH_URL . 'assets/js/admin.js', array(), FADEWATCH_VERSION, true );
 
-		$state = ABPC_Store::state();
-		$meta  = ABPC_Store::meta();
+		$state = Fadewatch_Store::state();
+		$meta  = Fadewatch_Store::meta();
 
 		wp_localize_script(
-			'abpc-admin',
-			'abpcAdmin',
+			'fadewatch-admin',
+			'fadewatchAdmin',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( ABPC_Ajax::NONCE ),
+				'nonce'   => wp_create_nonce( Fadewatch_Ajax::NONCE ),
 				// Continue an unfinished scan in the browser (covers broken WP-Cron),
 				// or run the very first scan if none has completed yet.
 				'resume'  => ! empty( $state['queue'] ),
@@ -118,7 +118,7 @@ final class ABPC_Admin {
 	 * @return array
 	 */
 	public static function action_links( $links ) {
-		if ( ABPC_Settings::current_user_can() ) {
+		if ( Fadewatch_Settings::current_user_can() ) {
 			array_unshift(
 				$links,
 				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'fadewatch' ) ),
@@ -142,13 +142,13 @@ final class ABPC_Admin {
 	 * Renders the page.
 	 */
 	public static function render_page() {
-		if ( ! ABPC_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'fadewatch' ), 403 );
 		}
 
 		$settings_tab = self::is_settings_tab();
 		?>
-		<div class="wrap abpc-wrap">
+		<div class="wrap fadewatch-wrap">
 			<h1><?php esc_html_e( 'Plugin Maintenance', 'fadewatch' ); ?></h1>
 
 			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'fadewatch' ); ?>">
@@ -174,7 +174,7 @@ final class ABPC_Admin {
 	 */
 	private static function render_notices() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag set by our own redirect.
-		if ( isset( $_GET['abpc_saved'] ) && '1' === sanitize_key( wp_unslash( $_GET['abpc_saved'] ) ) ) {
+		if ( isset( $_GET['fadewatch_saved'] ) && '1' === sanitize_key( wp_unslash( $_GET['fadewatch_saved'] ) ) ) {
 			wp_admin_notice(
 				__( 'Settings saved.', 'fadewatch' ),
 				array(
@@ -191,7 +191,7 @@ final class ABPC_Admin {
 			);
 		}
 
-		if ( ABPC_Settings::scheduled_scans_paused() ) {
+		if ( Fadewatch_Settings::scheduled_scans_paused() ) {
 			wp_admin_notice(
 				__( 'Scheduled checks are paused because this is a local environment. "Check now" still works.', 'fadewatch' ),
 				array( 'type' => 'info' )
@@ -203,34 +203,34 @@ final class ABPC_Admin {
 	 * Report tab.
 	 */
 	private static function render_report() {
-		$rows   = ABPC_Report::rows();
-		$counts = ABPC_Report::counts();
-		$meta   = ABPC_Store::meta();
-		$extras = ABPC_Resolver::unchecked_extras();
+		$rows   = Fadewatch_Report::rows();
+		$counts = Fadewatch_Report::counts();
+		$meta   = Fadewatch_Store::meta();
+		$extras = Fadewatch_Resolver::unchecked_extras();
 
 		$summary = array(
-			ABPC_Status::CLOSED,
-			ABPC_Status::ABANDONED,
-			ABPC_Status::AGEING,
-			ABPC_Status::MAINTAINED,
-			ABPC_Status::NOT_ON_ORG,
-			ABPC_Status::UNKNOWN,
+			Fadewatch_Status::CLOSED,
+			Fadewatch_Status::ABANDONED,
+			Fadewatch_Status::AGEING,
+			Fadewatch_Status::MAINTAINED,
+			Fadewatch_Status::NOT_ON_ORG,
+			Fadewatch_Status::UNKNOWN,
 		);
 
-		$export_url = wp_nonce_url( admin_url( 'admin-post.php?action=abpc_export_csv' ), 'abpc_export_csv' );
+		$export_url = wp_nonce_url( admin_url( 'admin-post.php?action=fadewatch_export_csv' ), 'fadewatch_export_csv' );
 		?>
-		<ul class="abpc-summary">
+		<ul class="fadewatch-summary">
 			<?php foreach ( $summary as $status ) : ?>
-				<li class="abpc-summary__item abpc-status--<?php echo esc_attr( $status ); ?>">
-					<span class="dashicons <?php echo esc_attr( ABPC_Render::icon( $status ) ); ?>" aria-hidden="true"></span>
-					<span class="abpc-summary__count"><?php echo esc_html( number_format_i18n( $counts[ $status ] ) ); ?></span>
-					<span class="abpc-summary__label"><?php echo esc_html( ABPC_Status::label( $status ) ); ?></span>
+				<li class="fadewatch-summary__item fadewatch-status--<?php echo esc_attr( $status ); ?>">
+					<span class="dashicons <?php echo esc_attr( Fadewatch_Render::icon( $status ) ); ?>" aria-hidden="true"></span>
+					<span class="fadewatch-summary__count"><?php echo esc_html( number_format_i18n( $counts[ $status ] ) ); ?></span>
+					<span class="fadewatch-summary__label"><?php echo esc_html( Fadewatch_Status::label( $status ) ); ?></span>
 				</li>
 			<?php endforeach; ?>
 		</ul>
 
-		<div class="abpc-toolbar">
-			<p class="abpc-toolbar__meta">
+		<div class="fadewatch-toolbar">
+			<p class="fadewatch-toolbar__meta">
 				<?php
 				if ( $meta['last_full_scan'] ) {
 					printf(
@@ -244,16 +244,16 @@ final class ABPC_Admin {
 				}
 				?>
 			</p>
-			<button type="button" class="button button-primary" id="abpc-check-now"><?php esc_html_e( 'Check now', 'fadewatch' ); ?></button>
+			<button type="button" class="button button-primary" id="fadewatch-check-now"><?php esc_html_e( 'Check now', 'fadewatch' ); ?></button>
 			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'fadewatch' ); ?></a>
 		</div>
 
-		<div class="abpc-progress" id="abpc-progress" hidden>
-			<progress id="abpc-progress-bar" max="100" value="0"></progress>
-			<p id="abpc-progress-text" class="abpc-progress__text" role="status" aria-live="polite"></p>
+		<div class="fadewatch-progress" id="fadewatch-progress" hidden>
+			<progress id="fadewatch-progress-bar" max="100" value="0"></progress>
+			<p id="fadewatch-progress-text" class="fadewatch-progress__text" role="status" aria-live="polite"></p>
 		</div>
 
-		<table class="widefat striped abpc-table">
+		<table class="widefat striped fadewatch-table">
 			<caption class="screen-reader-text"><?php esc_html_e( 'Maintenance status of installed plugins, most serious first', 'fadewatch' ); ?></caption>
 			<thead>
 				<tr>
@@ -275,15 +275,15 @@ final class ABPC_Admin {
 					$item   = $row['item'];
 					$eval   = $row['eval'];
 					$record = $row['record'];
-					$ok     = is_array( $record ) && isset( $record['result'] ) && 'ok' === $record['result'] && ABPC_Status::UNVERIFIED !== $eval['status'];
+					$ok     = is_array( $record ) && isset( $record['result'] ) && 'ok' === $record['result'] && Fadewatch_Status::UNVERIFIED !== $eval['status'];
 					?>
 					<tr>
-						<td class="abpc-table__plugin">
+						<td class="fadewatch-table__plugin">
 							<strong><?php echo esc_html( $item['name'] ); ?></strong>
-							<span class="abpc-detail">
+							<span class="fadewatch-detail">
 								<?php echo esc_html( $item['active'] ? __( 'Active', 'fadewatch' ) : __( 'Inactive', 'fadewatch' ) ); ?>
-								<?php if ( ABPC_Render::has_org_page( $eval ) && ABPC_Status::CLOSED !== $eval['status'] ) : ?>
-									· <a href="<?php echo esc_url( ABPC_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch' ); ?></span></a>
+								<?php if ( Fadewatch_Render::has_org_page( $eval ) && Fadewatch_Status::CLOSED !== $eval['status'] ) : ?>
+									· <a href="<?php echo esc_url( Fadewatch_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch' ); ?></span></a>
 								<?php else : ?>
 									· <?php echo esc_html( $item['slug'] ); ?>
 								<?php endif; ?>
@@ -291,8 +291,8 @@ final class ABPC_Admin {
 						</td>
 						<td>
 							<?php
-							echo ABPC_Render::badge( $eval ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in ABPC_Render::badge().
-							echo ABPC_Render::details_html( $eval, $item, $record ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in ABPC_Render::details_html().
+							echo Fadewatch_Render::badge( $eval ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::badge().
+							echo Fadewatch_Render::details_html( $eval, $item, $record ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::details_html().
 							?>
 						</td>
 						<td><?php echo $ok && '' !== $record['tested'] ? esc_html( $record['tested'] ) : '&mdash;'; ?></td>
@@ -341,11 +341,11 @@ final class ABPC_Admin {
 		<?php if ( $extras ) : ?>
 			<h2><?php esc_html_e( 'Not checked', 'fadewatch' ); ?></h2>
 			<p><?php esc_html_e( 'Must-use plugins and drop-ins are not installed from WordPress.org, so they are not checked.', 'fadewatch' ); ?></p>
-			<ul class="abpc-extras">
+			<ul class="fadewatch-extras">
 				<?php foreach ( $extras as $extra ) : ?>
 					<li>
 						<?php echo esc_html( $extra['name'] ); ?>
-						<span class="abpc-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'fadewatch' ) : __( 'drop-in', 'fadewatch' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
+						<span class="fadewatch-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'fadewatch' ) : __( 'drop-in', 'fadewatch' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -357,28 +357,28 @@ final class ABPC_Admin {
 	 * Settings tab.
 	 */
 	private static function render_settings() {
-		$s = ABPC_Settings::get();
+		$s = Fadewatch_Settings::get();
 		?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-			<input type="hidden" name="action" value="abpc_save_settings" />
-			<?php wp_nonce_field( 'abpc_save_settings' ); ?>
+			<input type="hidden" name="action" value="fadewatch_save_settings" />
+			<?php wp_nonce_field( 'fadewatch_save_settings' ); ?>
 
 			<h2><?php esc_html_e( 'Thresholds', 'fadewatch' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="abpc_ageing_months"><?php esc_html_e( '"Ageing" after', 'fadewatch' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_ageing_months"><?php esc_html_e( '"Ageing" after', 'fadewatch' ); ?></label></th>
 					<td>
-						<input type="number" min="1" max="120" step="1" class="small-text" id="abpc_ageing_months" name="abpc_ageing_months" value="<?php echo esc_attr( $s['ageing_months'] ); ?>" aria-describedby="abpc_ageing_months_desc" />
+						<input type="number" min="1" max="120" step="1" class="small-text" id="fadewatch_ageing_months" name="fadewatch_ageing_months" value="<?php echo esc_attr( $s['ageing_months'] ); ?>" aria-describedby="fadewatch_ageing_months_desc" />
 						<?php esc_html_e( 'months without an update', 'fadewatch' ); ?>
-						<p class="description" id="abpc_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'fadewatch' ); ?></p>
+						<p class="description" id="fadewatch_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'fadewatch' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="abpc_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'fadewatch' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'fadewatch' ); ?></label></th>
 					<td>
-						<input type="number" min="2" max="240" step="1" class="small-text" id="abpc_abandoned_months" name="abpc_abandoned_months" value="<?php echo esc_attr( $s['abandoned_months'] ); ?>" aria-describedby="abpc_abandoned_months_desc" />
+						<input type="number" min="2" max="240" step="1" class="small-text" id="fadewatch_abandoned_months" name="fadewatch_abandoned_months" value="<?php echo esc_attr( $s['abandoned_months'] ); ?>" aria-describedby="fadewatch_abandoned_months_desc" />
 						<?php esc_html_e( 'months without an update', 'fadewatch' ); ?>
-						<p class="description" id="abpc_abandoned_months_desc"><?php esc_html_e( 'Default: 24, the same as Wordfence. Must be higher than the "Ageing" value.', 'fadewatch' ); ?></p>
+						<p class="description" id="fadewatch_abandoned_months_desc"><?php esc_html_e( 'Default: 24. Must be higher than the "Ageing" value.', 'fadewatch' ); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -388,14 +388,14 @@ final class ABPC_Admin {
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'fadewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'fadewatch' ); ?></label>
+						<label><input type="checkbox" name="fadewatch_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'fadewatch' ); ?></label>
 						<p class="description"><?php esc_html_e( 'Recommended: the files of inactive plugins are still on the server and can still be attacked.', 'fadewatch' ); ?></p>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Local environments', 'fadewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'fadewatch' ); ?></label>
+						<label><input type="checkbox" name="fadewatch_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'fadewatch' ); ?></label>
 						<p class="description">
 							<?php
 							printf(
@@ -416,18 +416,18 @@ final class ABPC_Admin {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php esc_html_e( 'Send e-mails', 'fadewatch' ); ?></legend>
-							<label><input type="radio" name="abpc_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'fadewatch' ); ?></label><br />
-							<label><input type="radio" name="abpc_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'fadewatch' ); ?></label><br />
-							<label><input type="radio" name="abpc_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'fadewatch' ); ?></label>
+							<label><input type="radio" name="fadewatch_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'fadewatch' ); ?></label><br />
+							<label><input type="radio" name="fadewatch_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'fadewatch' ); ?></label><br />
+							<label><input type="radio" name="fadewatch_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'fadewatch' ); ?></label>
 							<p class="description"><?php esc_html_e( 'A plugin closed for a security issue triggers an immediate e-mail. Other changes are collected into one e-mail per check.', 'fadewatch' ); ?></p>
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="abpc_recipients"><?php esc_html_e( 'Recipients', 'fadewatch' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_recipients"><?php esc_html_e( 'Recipients', 'fadewatch' ); ?></label></th>
 					<td>
-						<input type="text" class="regular-text" id="abpc_recipients" name="abpc_recipients" value="<?php echo esc_attr( $s['recipients'] ); ?>" placeholder="<?php echo esc_attr( get_site_option( 'admin_email' ) ); ?>" aria-describedby="abpc_recipients_desc" />
-						<p class="description" id="abpc_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'fadewatch' ); ?></p>
+						<input type="text" class="regular-text" id="fadewatch_recipients" name="fadewatch_recipients" value="<?php echo esc_attr( $s['recipients'] ); ?>" placeholder="<?php echo esc_attr( get_site_option( 'admin_email' ) ); ?>" aria-describedby="fadewatch_recipients_desc" />
+						<p class="description" id="fadewatch_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'fadewatch' ); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -437,7 +437,7 @@ final class ABPC_Admin {
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Data', 'fadewatch' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="abpc_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'fadewatch' ); ?></label>
+						<label><input type="checkbox" name="fadewatch_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'fadewatch' ); ?></label>
 					</td>
 				</tr>
 			</table>
@@ -451,31 +451,31 @@ final class ABPC_Admin {
 	 * Saves settings (admin-post.php works in both site and network admin).
 	 */
 	public static function handle_save_settings() {
-		if ( ! ABPC_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch' ), 403 );
 		}
-		check_admin_referer( 'abpc_save_settings' );
+		check_admin_referer( 'fadewatch_save_settings' );
 
-		$before = ABPC_Settings::get();
+		$before = Fadewatch_Settings::get();
 
-		$saved = ABPC_Settings::update(
+		$saved = Fadewatch_Settings::update(
 			array(
-				'ageing_months'       => isset( $_POST['abpc_ageing_months'] ) ? absint( wp_unslash( $_POST['abpc_ageing_months'] ) ) : 0,
-				'abandoned_months'    => isset( $_POST['abpc_abandoned_months'] ) ? absint( wp_unslash( $_POST['abpc_abandoned_months'] ) ) : 0,
-				'include_inactive'    => self::posted_checkbox( 'abpc_include_inactive' ),
-				'skip_local'          => self::posted_checkbox( 'abpc_skip_local' ),
-				'delete_on_uninstall' => self::posted_checkbox( 'abpc_delete_on_uninstall' ),
-				'notify'              => isset( $_POST['abpc_notify'] ) ? sanitize_key( wp_unslash( $_POST['abpc_notify'] ) ) : '',
-				'recipients'          => isset( $_POST['abpc_recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['abpc_recipients'] ) ) : '',
+				'ageing_months'       => isset( $_POST['fadewatch_ageing_months'] ) ? absint( wp_unslash( $_POST['fadewatch_ageing_months'] ) ) : 0,
+				'abandoned_months'    => isset( $_POST['fadewatch_abandoned_months'] ) ? absint( wp_unslash( $_POST['fadewatch_abandoned_months'] ) ) : 0,
+				'include_inactive'    => self::posted_checkbox( 'fadewatch_include_inactive' ),
+				'skip_local'          => self::posted_checkbox( 'fadewatch_skip_local' ),
+				'delete_on_uninstall' => self::posted_checkbox( 'fadewatch_delete_on_uninstall' ),
+				'notify'              => isset( $_POST['fadewatch_notify'] ) ? sanitize_key( wp_unslash( $_POST['fadewatch_notify'] ) ) : '',
+				'recipients'          => isset( $_POST['fadewatch_recipients'] ) ? sanitize_text_field( wp_unslash( $_POST['fadewatch_recipients'] ) ) : '',
 			)
 		);
 
 		// Newly included inactive plugins need data.
 		if ( $saved['include_inactive'] && ! $before['include_inactive'] ) {
-			ABPC_Scanner::start_full_scan( 'settings' );
+			Fadewatch_Scanner::start_full_scan( 'settings' );
 		}
 
-		wp_safe_redirect( add_query_arg( 'abpc_saved', '1', self::page_url( 'settings' ) ) );
+		wp_safe_redirect( add_query_arg( 'fadewatch_saved', '1', self::page_url( 'settings' ) ) );
 		exit;
 	}
 
@@ -495,10 +495,10 @@ final class ABPC_Admin {
 	 * Streams the report as CSV.
 	 */
 	public static function handle_export_csv() {
-		if ( ! ABPC_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch' ), 403 );
 		}
-		check_admin_referer( 'abpc_export_csv' );
+		check_admin_referer( 'fadewatch_export_csv' );
 
 		$host     = (string) wp_parse_url( network_home_url(), PHP_URL_HOST );
 		$filename = sanitize_file_name( 'plugin-maintenance-' . $host . '-' . gmdate( 'Y-m-d' ) . '.csv' );
@@ -532,11 +532,11 @@ final class ABPC_Admin {
 			)
 		);
 
-		foreach ( ABPC_Report::rows() as $row ) {
+		foreach ( Fadewatch_Report::rows() as $row ) {
 			$item   = $row['item'];
 			$eval   = $row['eval'];
 			$record = is_array( $row['record'] ) ? $row['record'] : array();
-			$ok     = isset( $record['result'] ) && 'ok' === $record['result'] && ABPC_Status::UNVERIFIED !== $eval['status'];
+			$ok     = isset( $record['result'] ) && 'ok' === $record['result'] && Fadewatch_Status::UNVERIFIED !== $eval['status'];
 
 			self::csv_row(
 				$out,
@@ -545,9 +545,9 @@ final class ABPC_Admin {
 					$item['file'],
 					$item['slug'],
 					$item['active'] ? __( 'Yes', 'fadewatch' ) : __( 'No', 'fadewatch' ),
-					ABPC_Status::label( $eval['status'] ),
+					Fadewatch_Status::label( $eval['status'] ),
 					$eval['severity'],
-					implode( ' ', ABPC_Render::details( $eval, $item, $row['record'] ) ),
+					implode( ' ', Fadewatch_Render::details( $eval, $item, $row['record'] ) ),
 					$eval['last_updated'] ? gmdate( 'Y-m-d', $eval['last_updated'] ) : '',
 					$eval['closed_date'],
 					$eval['reason_text'],

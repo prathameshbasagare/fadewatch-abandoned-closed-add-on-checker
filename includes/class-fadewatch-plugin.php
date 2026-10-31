@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Plugin bootstrap.
  */
-final class ABPC_Plugin {
+final class Fadewatch_Plugin {
 
 	/**
 	 * Registers hooks. Runs on `plugins_loaded`.
@@ -20,13 +20,13 @@ final class ABPC_Plugin {
 	 */
 	public static function init() {
 		// Cron, upgrader and deletion hooks must run outside wp-admin too.
-		ABPC_Scanner::register_hooks();
-		ABPC_Site_Health::register_hooks();
+		Fadewatch_Scanner::register_hooks();
+		Fadewatch_Site_Health::register_hooks();
 
 		if ( is_admin() ) {
-			ABPC_Admin::register_hooks();
-			ABPC_Plugins_Screen::register_hooks();
-			ABPC_Ajax::register_hooks();
+			Fadewatch_Admin::register_hooks();
+			Fadewatch_Plugins_Screen::register_hooks();
+			Fadewatch_Ajax::register_hooks();
 		}
 	}
 
@@ -37,8 +37,8 @@ final class ABPC_Plugin {
 	 * for network activation.
 	 */
 	public static function activate() {
-		ABPC_Scanner::ensure_schedules();
-		ABPC_Scanner::start_full_scan( 'activation' );
+		Fadewatch_Scanner::ensure_schedules();
+		Fadewatch_Scanner::start_full_scan( 'activation' );
 	}
 
 	/**
@@ -46,7 +46,7 @@ final class ABPC_Plugin {
 	 * Stored data is kept until the plugin is deleted (see uninstall.php).
 	 */
 	public static function deactivate() {
-		ABPC_Scanner::clear_schedules();
-		ABPC_Store::unlock();
+		Fadewatch_Scanner::clear_schedules();
+		Fadewatch_Store::unlock();
 	}
 }

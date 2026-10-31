@@ -11,11 +11,11 @@ defined( 'ABSPATH' ) || exit;
  * Plugins screen integration. Reads stored data only (one option read);
  * makes no HTTP requests.
  */
-final class ABPC_Plugins_Screen {
+final class Fadewatch_Plugins_Screen {
 
-	const COLUMN    = 'abpc_maintenance';
-	const QUERY_VAR = 'abpc_status';
-	const SORT_KEY  = 'abpc_maintenance';
+	const COLUMN    = 'fadewatch_maintenance';
+	const QUERY_VAR = 'fadewatch_status';
+	const SORT_KEY  = 'fadewatch_maintenance';
 
 	/**
 	 * Statuses that get a filter link above the table.
@@ -23,10 +23,10 @@ final class ABPC_Plugins_Screen {
 	 * @var string[]
 	 */
 	private static $filters = array(
-		ABPC_Status::CLOSED,
-		ABPC_Status::ABANDONED,
-		ABPC_Status::NOT_ON_ORG,
-		ABPC_Status::UNKNOWN,
+		Fadewatch_Status::CLOSED,
+		Fadewatch_Status::ABANDONED,
+		Fadewatch_Status::NOT_ON_ORG,
+		Fadewatch_Status::UNKNOWN,
 	);
 
 	/**
@@ -41,7 +41,7 @@ final class ABPC_Plugins_Screen {
 	 * who may use this plugin.
 	 */
 	public static function setup() {
-		if ( ! ABPC_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
 			return;
 		}
 		// On multisite, plugins are managed in the network admin only.
@@ -102,24 +102,24 @@ final class ABPC_Plugins_Screen {
 		}
 
 		if ( in_array( self::plugin_status(), array( 'mustuse', 'dropins' ), true ) ) {
-			echo '<span class="abpc-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'fadewatch' ) . '</span>';
+			echo '<span class="fadewatch-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'fadewatch' ) . '</span>';
 			return;
 		}
 
-		$rows = ABPC_Report::rows();
+		$rows = Fadewatch_Report::rows();
 		if ( ! isset( $rows[ $plugin_file ] ) ) {
 			return;
 		}
 
 		$row = $rows[ $plugin_file ];
 
-		echo ABPC_Render::badge( $row['eval'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in ABPC_Render::badge().
-		echo ABPC_Render::details_html( $row['eval'], $row['item'], $row['record'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in ABPC_Render::details_html().
+		echo Fadewatch_Render::badge( $row['eval'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::badge().
+		echo Fadewatch_Render::details_html( $row['eval'], $row['item'], $row['record'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::details_html().
 
-		if ( ABPC_Render::has_org_page( $row['eval'] ) && ABPC_Status::CLOSED !== $row['eval']['status'] ) {
+		if ( Fadewatch_Render::has_org_page( $row['eval'] ) && Fadewatch_Status::CLOSED !== $row['eval']['status'] ) {
 			printf(
-				'<a class="abpc-detail" href="%1$s" target="_blank" rel="noopener noreferrer">%2$s<span class="screen-reader-text"> %3$s</span></a>',
-				esc_url( ABPC_Render::org_url( $row['item']['slug'] ) ),
+				'<a class="fadewatch-detail" href="%1$s" target="_blank" rel="noopener noreferrer">%2$s<span class="screen-reader-text"> %3$s</span></a>',
+				esc_url( Fadewatch_Render::org_url( $row['item']['slug'] ) ),
 				esc_html__( 'View on WordPress.org', 'fadewatch' ),
 				esc_html__( '(opens in a new tab)', 'fadewatch' )
 			);
@@ -133,7 +133,7 @@ final class ABPC_Plugins_Screen {
 	 * @return array
 	 */
 	public static function add_views( $views ) {
-		$counts  = ABPC_Report::counts();
+		$counts  = Fadewatch_Report::counts();
 		$current = self::current_filter();
 
 		if ( $current ) {
@@ -158,11 +158,11 @@ final class ABPC_Plugins_Screen {
 
 			$is_current = $current === $status;
 
-			$views[ 'abpc_' . $status ] = sprintf(
+			$views[ 'fadewatch_' . $status ] = sprintf(
 				'<a href="%1$s"%2$s>%3$s <span class="count">(%4$s)</span></a>',
 				esc_url( $url ),
 				$is_current ? ' class="current" aria-current="page"' : '',
-				esc_html( ABPC_Status::label( $status ) ),
+				esc_html( Fadewatch_Status::label( $status ) ),
 				esc_html( number_format_i18n( $counts[ $status ] ) )
 			);
 		}
@@ -182,7 +182,7 @@ final class ABPC_Plugins_Screen {
 			return $plugins;
 		}
 
-		$rows    = ABPC_Report::rows();
+		$rows    = Fadewatch_Report::rows();
 		$filter  = self::current_filter();
 		$sorting = self::is_sorting();
 
@@ -195,7 +195,7 @@ final class ABPC_Plugins_Screen {
 			}
 
 			if ( $sorting && is_array( $data ) ) {
-				$severity = isset( $rows[ $file ] ) ? ABPC_Status::severity_rank( $rows[ $file ]['eval']['severity'] ) : 0;
+				$severity = isset( $rows[ $file ] ) ? Fadewatch_Status::severity_rank( $rows[ $file ]['eval']['severity'] ) : 0;
 				$name     = isset( $data['Name'] ) ? $data['Name'] : $file;
 				// Core sorts with strcasecmp(); "9 - severity" puts the most
 				// serious first in ascending order.

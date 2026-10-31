@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Resolver.
  */
-final class ABPC_Resolver {
+final class Fadewatch_Resolver {
 
 	/**
 	 * Returns every installed plugin with its WordPress.org slug.
@@ -18,7 +18,7 @@ final class ABPC_Resolver {
 	 * Each item has a `skip` reason; an empty string means "check it":
 	 * - `update_uri`: the Update URI header points somewhere other than WordPress.org.
 	 * - `inactive`:   inactive plugins are excluded in the settings.
-	 * - `filtered`:   excluded through the `abpc_skip_plugin` filter.
+	 * - `filtered`:   excluded through the `fadewatch_skip_plugin` filter.
 	 * - `no_slug`:    no usable slug could be derived.
 	 *
 	 * @return array<string, array> Keyed by plugin file.
@@ -26,7 +26,7 @@ final class ABPC_Resolver {
 	public static function get_items() {
 		self::load_plugin_functions();
 
-		$include_inactive = (bool) ABPC_Settings::get( 'include_inactive' );
+		$include_inactive = (bool) Fadewatch_Settings::get( 'include_inactive' );
 		$items            = array();
 
 		foreach ( get_plugins() as $file => $data ) {
@@ -51,7 +51,7 @@ final class ABPC_Resolver {
 			 * @param string $file Plugin file, e.g. `akismet/akismet.php`.
 			 * @param array  $data Plugin header data.
 			 */
-			$skip = (bool) apply_filters( 'abpc_skip_plugin', false, $file, $data );
+			$skip = (bool) apply_filters( 'fadewatch_skip_plugin', false, $file, $data );
 
 			if ( $skip ) {
 				$item['skip'] = 'filtered';
@@ -135,7 +135,7 @@ final class ABPC_Resolver {
 		 * @param string $file Plugin file.
 		 * @param array  $data Plugin header data.
 		 */
-		$slug = apply_filters( 'abpc_plugin_slug', $slug, $file, $data );
+		$slug = apply_filters( 'fadewatch_plugin_slug', $slug, $file, $data );
 
 		$slug = strtolower( (string) $slug );
 		return preg_match( '/^[a-z0-9][a-z0-9_-]*$/', $slug ) ? $slug : '';

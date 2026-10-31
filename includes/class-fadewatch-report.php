@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Report.
  */
-final class ABPC_Report {
+final class Fadewatch_Report {
 
 	/**
 	 * Request cache.
@@ -31,16 +31,16 @@ final class ABPC_Report {
 			return self::$rows;
 		}
 
-		$results = ABPC_Store::results();
+		$results = Fadewatch_Store::results();
 		$context = self::context();
 		$rows    = array();
 
-		foreach ( ABPC_Resolver::get_items() as $file => $item ) {
+		foreach ( Fadewatch_Resolver::get_items() as $file => $item ) {
 			$record        = isset( $results[ $file ] ) ? $results[ $file ] : null;
 			$rows[ $file ] = array(
 				'item'   => $item,
 				'record' => $record,
-				'eval'   => ABPC_Status::evaluate( $item, $record, $context ),
+				'eval'   => Fadewatch_Status::evaluate( $item, $record, $context ),
 			);
 		}
 
@@ -63,7 +63,7 @@ final class ABPC_Report {
 	 * @return array<string, int>
 	 */
 	public static function counts() {
-		$counts = array_fill_keys( ABPC_Status::all(), 0 );
+		$counts = array_fill_keys( Fadewatch_Status::all(), 0 );
 		foreach ( self::rows() as $row ) {
 			++$counts[ $row['eval']['status'] ];
 		}
@@ -77,7 +77,7 @@ final class ABPC_Report {
 	 */
 	public static function context() {
 		return array(
-			'thresholds' => ABPC_Settings::thresholds(),
+			'thresholds' => Fadewatch_Settings::thresholds(),
 			'now'        => time(),
 			'wp_version' => self::newest_wp_version(),
 		);
@@ -111,7 +111,7 @@ final class ABPC_Report {
 	 * @return int
 	 */
 	public static function compare_rows( $a, $b ) {
-		$diff = ABPC_Status::severity_rank( $b['eval']['severity'] ) - ABPC_Status::severity_rank( $a['eval']['severity'] );
+		$diff = Fadewatch_Status::severity_rank( $b['eval']['severity'] ) - Fadewatch_Status::severity_rank( $a['eval']['severity'] );
 		if ( 0 !== $diff ) {
 			return $diff;
 		}
