@@ -1,4 +1,4 @@
-# Fadewatch – Abandoned & Closed Plugin Checker
+# Fadewatch – Abandoned & Closed Add-on Checker
 
 Find out which of your WordPress plugins have been **closed on WordPress.org (and why)**, which haven't been updated in years, and which can't be checked.
 
