@@ -22,6 +22,16 @@ final class Fadewatch_Ajax {
 	public static function register_hooks() {
 		add_action( 'wp_ajax_fadewatch_scan_start', array( __CLASS__, 'start' ) );
 		add_action( 'wp_ajax_fadewatch_scan_step', array( __CLASS__, 'step' ) );
+		add_action( 'wp_ajax_fadewatch_grant_consent', array( __CLASS__, 'grant_consent' ) );
+	}
+
+	/**
+	 * Records consent from the opt-in dialog and queues the first scan.
+	 */
+	public static function grant_consent() {
+		self::authorize();
+		Fadewatch_Settings::grant_consent();
+		wp_send_json_success( Fadewatch_Scanner::start_full_scan( 'consent' ) );
 	}
 
 	/**

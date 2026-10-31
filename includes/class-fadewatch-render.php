@@ -126,7 +126,9 @@ final class Fadewatch_Render {
 				break;
 
 			case Fadewatch_Status::PENDING:
-				$lines[] = __( 'Waiting for the first check.', 'fadewatch-abandoned-closed-add-on-checker' );
+				$lines[] = Fadewatch_Settings::checks_allowed()
+					? __( 'Waiting for the first check.', 'fadewatch-abandoned-closed-add-on-checker' )
+					: __( 'Checks are off. Allow them on the Plugin Maintenance page.', 'fadewatch-abandoned-closed-add-on-checker' );
 				break;
 
 			case Fadewatch_Status::SKIPPED:

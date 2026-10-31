@@ -4,7 +4,7 @@ Tags: abandoned plugins, plugin maintenance, plugins, site health, security
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,7 @@ All lookups run in the background (WP-Cron), in small batches. Opening the Plugi
 * Plugins are re-checked right after they are installed, updated or activated.
 * Works when WP-Cron is disabled: "Check now" runs the batches from your browser.
 * Multisite: one shared check for the whole network, in Network Admin → Plugins.
+* Asks first: nothing is sent to WordPress.org until an administrator allows checks, and checks can be turned off at any time.
 * No ads, no account, no tracking.
 
 = Not a vulnerability scanner =
@@ -70,7 +71,8 @@ Actions:
 This plugin connects to the **WordPress.org Plugins API** (`https://api.wordpress.org/plugins/info/1.2/`) to look up the maintenance status of installed plugins: last update date, whether the plugin was closed and why, "tested up to" version, rating and active installs.
 
 * **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `Fadewatch/<version>` and does not include your site address.
-* **When:** once a day in the background, every 6 hours for closed plugins and failed checks, right after a plugin is installed, updated or activated, and when an administrator clicks "Check now".
+* **Only after consent:** nothing is sent until an administrator clicks "Allow checks and scan now" on the Plugin Maintenance page (or enables "WordPress.org checks" in the settings). Turning that setting off stops all requests.
+* **When:** after consent, once a day in the background, every 6 hours for closed plugins and failed checks, right after a plugin is installed, updated or activated, and when an administrator clicks "Check now".
 * No personal data about your visitors or users is sent.
 
 This is the same service WordPress itself uses to check for plugin updates. It is provided by WordPress.org: [Privacy Policy](https://wordpress.org/about/privacy/).
@@ -79,9 +81,14 @@ This is the same service WordPress itself uses to check for plugin updates. It i
 
 1. Install the plugin from Plugins → Add New, or upload the folder to `/wp-content/plugins/`.
 2. Activate it. On multisite, network-activate it.
-3. The first check starts automatically. Results appear in the new "Maintenance" column on the Plugins screen and under Tools → Plugin Maintenance (Network Admin → Plugins → Plugin Maintenance on multisite).
+3. Go to Tools → Plugin Maintenance (Network Admin → Plugins → Plugin Maintenance on multisite) and click "Allow checks and scan now".
+4. Results appear in the new "Maintenance" column on the Plugins screen and on the Plugin Maintenance page.
 
 == Frequently Asked Questions ==
+
+= Why does Fadewatch ask for permission first? =
+
+Checking a plugin means sending its slug to api.wordpress.org. Fadewatch only does that after an administrator agrees. You can withdraw consent at any time under Settings → "WordPress.org checks"; Fadewatch then makes no external requests.
 
 = Why does a plugin show "Not on WordPress.org"? =
 
@@ -119,10 +126,16 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 
 == Changelog ==
 
+= 1.0.1 =
+* New: opt-in. Fadewatch asks an administrator before contacting WordPress.org, and checks can be turned off in the settings.
+
 = 1.0.0 =
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Fadewatch now asks for permission before contacting WordPress.org. Open Tools → Plugin Maintenance and click "Allow checks and scan now".
 
 = 1.0.0 =
 First release.

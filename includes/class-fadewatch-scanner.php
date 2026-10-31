@@ -110,6 +110,11 @@ final class Fadewatch_Scanner {
 	 * @return array Progress.
 	 */
 	public static function start_full_scan( $source = 'manual' ) {
+		// Opt-in: never contact WordPress.org before an administrator allows it.
+		if ( ! Fadewatch_Settings::checks_allowed() ) {
+			return self::progress( Fadewatch_Store::state(), false, true );
+		}
+
 		$files = Fadewatch_Resolver::checkable_files();
 
 		self::prune_results( Fadewatch_Resolver::get_items() );
@@ -127,7 +132,7 @@ final class Fadewatch_Scanner {
 		/**
 		 * Fires when a full scan is queued.
 		 *
-		 * @param string $source activation | cron | manual | fallback | settings.
+		 * @param string $source activation | cron | manual | fallback | settings | consent.
 		 */
 		do_action( 'fadewatch_scan_started', $source );
 
@@ -146,6 +151,10 @@ final class Fadewatch_Scanner {
 	 * @param string[] $files Plugin files.
 	 */
 	public static function enqueue( array $files ) {
+		if ( ! Fadewatch_Settings::checks_allowed() ) {
+			return;
+		}
+
 		$items = Fadewatch_Resolver::get_items();
 		$files = array_values(
 			array_filter(
@@ -208,7 +217,7 @@ final class Fadewatch_Scanner {
 	 */
 	public static function process_batch() {
 		$state = Fadewatch_Store::state();
-		if ( empty( $state['queue'] ) ) {
+		if ( empty( $state['queue'] ) || ! Fadewatch_Settings::checks_allowed() ) {
 			return self::progress( $state, false, true );
 		}
 

@@ -28,6 +28,7 @@ Every installed plugin gets exactly one status:
 
 ## How it works
 
+- **Opt-in first.** Nothing is sent to WordPress.org until an administrator clicks "Allow checks and scan now" (or enables it in Settings). Turning it off stops all requests.
 - **Background only.** WordPress.org is queried through WP-Cron in batches of 10. Each batch stops after 15 seconds to stay under PHP time limits. Admin pages only read stored data and never make HTTP requests. Nothing runs on the front end.
 - **Check now.** Runs the same batches from the browser over AJAX, so checks still work when WP-Cron is disabled or broken.
 - **Re-checks.** Closed plugins and failed checks are re-checked every 6 hours. Plugins are re-checked right after they are installed, updated or activated.
@@ -107,7 +108,7 @@ Run [Plugin Check](https://wordpress.org/plugins/plugin-check/) before every rel
 
 ## Privacy
 
-Only plugin slugs are sent, and only to `api.wordpress.org` over HTTPS. The user agent does not include the site URL. There is no tracking and no account. See the *External services* section in `readme.txt`.
+Nothing is sent before an administrator allows checks. After that, only plugin slugs are sent, and only to `api.wordpress.org` over HTTPS. The user agent does not include the site URL. There is no tracking and no account. See the *External services* section in `readme.txt`.
 
 ## License
 
