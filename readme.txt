@@ -1,5 +1,5 @@
 === Abandoned Plugin Checker ===
-Contributors: YOUR-WPORG-USERNAME
+Contributors: curiouswpdev
 Tags: abandoned plugins, closed plugins, plugin maintenance, site health, security
 Requires at least: 6.4
 Tested up to: 7.1
