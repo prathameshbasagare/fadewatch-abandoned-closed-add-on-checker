@@ -23,6 +23,7 @@ if ( $fadewatch_switched ) {
 }
 
 delete_site_transient( 'fadewatch_scan_lock' );
+delete_site_transient( 'fadewatch_consent_prompt' );
 
 $fadewatch_settings = get_site_option( 'fadewatch_settings', array() );
 $fadewatch_keep     = is_array( $fadewatch_settings ) && isset( $fadewatch_settings['delete_on_uninstall'] ) && ! $fadewatch_settings['delete_on_uninstall'];

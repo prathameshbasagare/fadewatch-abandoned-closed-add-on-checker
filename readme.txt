@@ -106,6 +106,10 @@ WordPress.org could not be reached, or returned an unexpected response. The chec
 
 No. Nothing runs on the front end. In the admin, the Plugins screen reads one stored option. All requests to WordPress.org happen in the background.
 
+= What happens to my data when I delete Fadewatch? =
+
+Scheduled checks are always removed. If "Delete all data of this plugin when it is deleted" is ticked in the settings (the default), all of Fadewatch's settings and previous scan results are removed too. If you untick it, your settings and results are kept for a later reinstall.
+
 = Will it delete or deactivate plugins? =
 
 No. It only reports. You decide what to do.
@@ -128,6 +132,7 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 
 = 1.0.1 =
 * New: opt-in. Fadewatch asks an administrator before contacting WordPress.org, and checks can be turned off in the settings.
+* New: right after activation, the permission prompt is shown once on the Plugins screen.
 
 = 1.0.0 =
 * First release.

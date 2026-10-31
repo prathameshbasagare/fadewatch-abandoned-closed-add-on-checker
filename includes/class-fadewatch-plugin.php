@@ -31,14 +31,20 @@ final class Fadewatch_Plugin {
 	}
 
 	/**
-	 * Activation: schedule events and queue the first scan.
+	 * Activation: schedule events. Checks start only after consent; until
+	 * then a one-time prompt is shown on the next Plugins screen load.
 	 *
 	 * The plugin declares `Network: true`, so on multisite this only runs
 	 * for network activation.
 	 */
 	public static function activate() {
 		Fadewatch_Scanner::ensure_schedules();
-		Fadewatch_Scanner::start_full_scan( 'activation' );
+
+		if ( Fadewatch_Settings::checks_allowed() ) {
+			Fadewatch_Scanner::start_full_scan( 'activation' );
+		} else {
+			set_site_transient( Fadewatch_Admin::PROMPT_FLAG, 1, WEEK_IN_SECONDS );
+		}
 	}
 
 	/**
@@ -48,5 +54,6 @@ final class Fadewatch_Plugin {
 	public static function deactivate() {
 		Fadewatch_Scanner::clear_schedules();
 		Fadewatch_Store::unlock();
+		delete_site_transient( Fadewatch_Admin::PROMPT_FLAG );
 	}
 }

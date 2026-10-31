@@ -15,7 +15,26 @@
 	var consentForm = document.getElementById( 'fadewatch-consent-form' );
 	var dialog = document.getElementById( 'fadewatch-consent-dialog' );
 
-	if ( ! cfg || ! box || ! bar || ! text ) {
+	if ( ! cfg ) {
+		return;
+	}
+
+	if ( dialog ) {
+		Array.prototype.forEach.call( dialog.querySelectorAll( '[data-fadewatch-close]' ), function ( button ) {
+			button.addEventListener( 'click', function () {
+				dialog.close();
+			} );
+		} );
+
+		if ( cfg.askConsent && typeof dialog.showModal === 'function' ) {
+			dialog.showModal();
+		}
+	}
+
+	// Everything below needs the report page. On the Plugins screen the
+	// consent form simply posts and lands on the report page, where the
+	// first scan then runs with a progress bar.
+	if ( ! box || ! bar || ! text ) {
 		return;
 	}
 
@@ -132,17 +151,11 @@
 		} );
 	}
 
-	if ( dialog ) {
-		Array.prototype.forEach.call( dialog.querySelectorAll( '[data-fadewatch-close]' ), function ( button ) {
-			button.addEventListener( 'click', function () {
-				dialog.close();
-			} );
-		} );
+	if ( cfg.askConsent ) {
+		return;
 	}
 
-	if ( cfg.askConsent && dialog && typeof dialog.showModal === 'function' ) {
-		dialog.showModal();
-	} else if ( cfg.resume ) {
+	if ( cfg.resume ) {
 		run( null );
 	} else if ( cfg.start ) {
 		run( 'fadewatch_scan_start' );
