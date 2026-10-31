@@ -9,7 +9,7 @@
  * Author URI:        https://profiles.wordpress.org/curiouswpdev/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       fadewatch
+ * Text Domain:       fadewatch-abandoned-closed-add-on-checker
  * Network:           true
  *
  * @package Fadewatch
@@ -21,7 +21,7 @@ define( 'FADEWATCH_VERSION', '1.0.0' );
 define( 'FADEWATCH_FILE', __FILE__ );
 define( 'FADEWATCH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FADEWATCH_URL', plugin_dir_url( __FILE__ ) );
-define( 'FADEWATCH_SLUG', 'fadewatch' );
+define( 'FADEWATCH_SLUG', 'fadewatch-abandoned-closed-add-on-checker' );
 
 require_once FADEWATCH_DIR . 'includes/class-fadewatch-settings.php';
 require_once FADEWATCH_DIR . 'includes/class-fadewatch-store.php';

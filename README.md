@@ -100,7 +100,7 @@ assets/                            Admin CSS and dependency-free JS
 Build the release zip from the `release` branch. `git archive` includes committed files only, so the `.git` folder stays out:
 
 ```sh
-git archive --format=zip --prefix=fadewatch/ release -o ../fadewatch.zip
+git archive --format=zip --prefix=fadewatch-abandoned-closed-add-on-checker/ release -o ../fadewatch-abandoned-closed-add-on-checker.zip
 ```
 
 Run [Plugin Check](https://wordpress.org/plugins/plugin-check/) before every release.
