@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Only the plugin slug is sent, and only to api.wordpress.org over HTTPS.
  */
-final class ABPC_API {
+final class Fadewatch_API {
 
 	const ENDPOINT = 'https://api.wordpress.org/plugins/info/1.2/';
 	const TIMEOUT  = 10;
@@ -30,7 +30,7 @@ final class ABPC_API {
 				'timeout'     => self::TIMEOUT,
 				'redirection' => 2,
 				// Deliberately omits the site URL that the default user agent includes.
-				'user-agent'  => 'Fadewatch/' . ABPC_VERSION,
+				'user-agent'  => 'Fadewatch/' . FADEWATCH_VERSION,
 				'headers'     => array( 'Accept' => 'application/json' ),
 			)
 		);

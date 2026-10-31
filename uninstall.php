@@ -8,27 +8,27 @@
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
-$abpc_hooks = array( 'abpc_daily_scan', 'abpc_process_queue', 'abpc_recheck', 'abpc_weekly_summary' );
+$fadewatch_hooks = array( 'fadewatch_daily_scan', 'fadewatch_process_queue', 'fadewatch_recheck', 'fadewatch_weekly_summary' );
 
 // Events are scheduled on the main site only.
-$abpc_switched = is_multisite() && ! is_main_site();
-if ( $abpc_switched ) {
+$fadewatch_switched = is_multisite() && ! is_main_site();
+if ( $fadewatch_switched ) {
 	switch_to_blog( get_main_site_id() );
 }
-foreach ( $abpc_hooks as $abpc_hook ) {
-	wp_clear_scheduled_hook( $abpc_hook );
+foreach ( $fadewatch_hooks as $fadewatch_hook ) {
+	wp_clear_scheduled_hook( $fadewatch_hook );
 }
-if ( $abpc_switched ) {
+if ( $fadewatch_switched ) {
 	restore_current_blog();
 }
 
-delete_site_transient( 'abpc_scan_lock' );
+delete_site_transient( 'fadewatch_scan_lock' );
 
-$abpc_settings = get_site_option( 'abpc_settings', array() );
-$abpc_keep     = is_array( $abpc_settings ) && isset( $abpc_settings['delete_on_uninstall'] ) && ! $abpc_settings['delete_on_uninstall'];
+$fadewatch_settings = get_site_option( 'fadewatch_settings', array() );
+$fadewatch_keep     = is_array( $fadewatch_settings ) && isset( $fadewatch_settings['delete_on_uninstall'] ) && ! $fadewatch_settings['delete_on_uninstall'];
 
-if ( ! $abpc_keep ) {
-	foreach ( array( 'abpc_settings', 'abpc_results', 'abpc_scan_state', 'abpc_meta', 'abpc_pending_changes' ) as $abpc_option ) {
-		delete_site_option( $abpc_option );
+if ( ! $fadewatch_keep ) {
+	foreach ( array( 'fadewatch_settings', 'fadewatch_results', 'fadewatch_scan_state', 'fadewatch_meta', 'fadewatch_pending_changes' ) as $fadewatch_option ) {
+		delete_site_option( $fadewatch_option );
 	}
 }

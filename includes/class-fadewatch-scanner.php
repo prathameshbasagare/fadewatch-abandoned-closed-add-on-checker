@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * All HTTP requests happen here, from WP-Cron, from "Check now" (AJAX)
  * or from the upgrader hooks. Never while an admin page renders.
  */
-final class ABPC_Scanner {
+final class Fadewatch_Scanner {
 
 	const BATCH_SIZE = 10;
 
@@ -26,10 +26,10 @@ final class ABPC_Scanner {
 	/** Fallback full scan when the last one is older than this. */
 	const FALLBACK_AFTER = 2 * DAY_IN_SECONDS;
 
-	const HOOK_DAILY   = 'abpc_daily_scan';
-	const HOOK_QUEUE   = 'abpc_process_queue';
-	const HOOK_RECHECK = 'abpc_recheck';
-	const HOOK_WEEKLY  = 'abpc_weekly_summary';
+	const HOOK_DAILY   = 'fadewatch_daily_scan';
+	const HOOK_QUEUE   = 'fadewatch_process_queue';
+	const HOOK_RECHECK = 'fadewatch_recheck';
+	const HOOK_WEEKLY  = 'fadewatch_weekly_summary';
 
 	/**
 	 * Registers hooks.
@@ -38,7 +38,7 @@ final class ABPC_Scanner {
 		add_action( self::HOOK_DAILY, array( __CLASS__, 'cron_full_scan' ) );
 		add_action( self::HOOK_QUEUE, array( __CLASS__, 'cron_process' ) );
 		add_action( self::HOOK_RECHECK, array( __CLASS__, 'recheck_problem_items' ) );
-		add_action( self::HOOK_WEEKLY, array( 'ABPC_Notifier', 'send_weekly_summary' ) );
+		add_action( self::HOOK_WEEKLY, array( 'Fadewatch_Notifier', 'send_weekly_summary' ) );
 
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'on_upgrade' ), 10, 2 );
 		add_action( 'activated_plugin', array( __CLASS__, 'on_activated' ) );
@@ -55,8 +55,8 @@ final class ABPC_Scanner {
 	 * @return array
 	 */
 	public static function cron_schedules( $schedules ) {
-		if ( ! isset( $schedules['abpc_six_hours'] ) ) {
-			$schedules['abpc_six_hours'] = array(
+		if ( ! isset( $schedules['fadewatch_six_hours'] ) ) {
+			$schedules['fadewatch_six_hours'] = array(
 				'interval' => 6 * HOUR_IN_SECONDS,
 				// Avoid loading translations before `init` if another plugin asks early.
 				'display'  => did_action( 'init' ) ? __( 'Every 6 hours', 'fadewatch' ) : 'Every 6 hours',
@@ -77,7 +77,7 @@ final class ABPC_Scanner {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::HOOK_DAILY );
 		}
 		if ( ! wp_next_scheduled( self::HOOK_RECHECK ) ) {
-			wp_schedule_event( time() + 6 * HOUR_IN_SECONDS, 'abpc_six_hours', self::HOOK_RECHECK );
+			wp_schedule_event( time() + 6 * HOUR_IN_SECONDS, 'fadewatch_six_hours', self::HOOK_RECHECK );
 		}
 		if ( ! wp_next_scheduled( self::HOOK_WEEKLY ) ) {
 			wp_schedule_event( time() + DAY_IN_SECONDS, 'weekly', self::HOOK_WEEKLY );
@@ -97,7 +97,7 @@ final class ABPC_Scanner {
 	 * Daily cron entry point.
 	 */
 	public static function cron_full_scan() {
-		if ( ABPC_Settings::scheduled_scans_paused() ) {
+		if ( Fadewatch_Settings::scheduled_scans_paused() ) {
 			return;
 		}
 		self::start_full_scan( 'cron' );
@@ -110,11 +110,11 @@ final class ABPC_Scanner {
 	 * @return array Progress.
 	 */
 	public static function start_full_scan( $source = 'manual' ) {
-		$files = ABPC_Resolver::checkable_files();
+		$files = Fadewatch_Resolver::checkable_files();
 
-		self::prune_results( ABPC_Resolver::get_items() );
+		self::prune_results( Fadewatch_Resolver::get_items() );
 
-		ABPC_Store::save_state(
+		Fadewatch_Store::save_state(
 			array(
 				'queue'      => $files,
 				'total'      => count( $files ),
@@ -129,15 +129,15 @@ final class ABPC_Scanner {
 		 *
 		 * @param string $source activation | cron | manual | fallback | settings.
 		 */
-		do_action( 'abpc_scan_started', $source );
+		do_action( 'fadewatch_scan_started', $source );
 
 		if ( empty( $files ) ) {
-			self::finalize( ABPC_Store::state() );
+			self::finalize( Fadewatch_Store::state() );
 		} else {
 			self::schedule_processing( 0 );
 		}
 
-		return self::progress( ABPC_Store::state() );
+		return self::progress( Fadewatch_Store::state() );
 	}
 
 	/**
@@ -146,7 +146,7 @@ final class ABPC_Scanner {
 	 * @param string[] $files Plugin files.
 	 */
 	public static function enqueue( array $files ) {
-		$items = ABPC_Resolver::get_items();
+		$items = Fadewatch_Resolver::get_items();
 		$files = array_values(
 			array_filter(
 				$files,
@@ -160,7 +160,7 @@ final class ABPC_Scanner {
 			return;
 		}
 
-		$state = ABPC_Store::state();
+		$state = Fadewatch_Store::state();
 		$new   = array_diff( $files, $state['queue'] );
 		if ( empty( $new ) ) {
 			return;
@@ -175,7 +175,7 @@ final class ABPC_Scanner {
 
 		$state['queue']  = array_merge( $state['queue'], array_values( $new ) );
 		$state['total'] += count( $new );
-		ABPC_Store::save_state( $state );
+		Fadewatch_Store::save_state( $state );
 
 		self::schedule_processing( 0 );
 	}
@@ -207,24 +207,24 @@ final class ABPC_Scanner {
 	 * @return array Progress (done, total, remaining, complete, busy).
 	 */
 	public static function process_batch() {
-		$state = ABPC_Store::state();
+		$state = Fadewatch_Store::state();
 		if ( empty( $state['queue'] ) ) {
 			return self::progress( $state, false, true );
 		}
 
-		if ( ! ABPC_Store::lock() ) {
+		if ( ! Fadewatch_Store::lock() ) {
 			return self::progress( $state, true );
 		}
 
 		// Take the batch off the queue first, so items enqueued while we
 		// work (e.g. by an update in another request) are not lost.
 		$batch = array_splice( $state['queue'], 0, self::BATCH_SIZE );
-		ABPC_Store::save_state( $state );
+		Fadewatch_Store::save_state( $state );
 
-		$items     = ABPC_Resolver::get_items();
-		$results   = ABPC_Store::results();
-		$context   = ABPC_Report::context();
-		$baseline  = ! ABPC_Store::meta()['baseline_done'];
+		$items     = Fadewatch_Resolver::get_items();
+		$results   = Fadewatch_Store::results();
+		$context   = Fadewatch_Report::context();
+		$baseline  = ! Fadewatch_Store::meta()['baseline_done'];
 		$started   = microtime( true );
 		$leftover  = array();
 		$processed = 0;
@@ -243,27 +243,27 @@ final class ABPC_Scanner {
 
 			$item     = $items[ $file ];
 			$previous = isset( $results[ $file ] ) ? $results[ $file ] : null;
-			$old      = ABPC_Status::evaluate( $item, $previous, $context );
+			$old      = Fadewatch_Status::evaluate( $item, $previous, $context );
 
-			$results[ $file ] = self::merge_record( $previous, ABPC_API::fetch_plugin( $item['slug'] ), $item['slug'] );
+			$results[ $file ] = self::merge_record( $previous, Fadewatch_API::fetch_plugin( $item['slug'] ), $item['slug'] );
 
-			$new = ABPC_Status::evaluate( $item, $results[ $file ], $context );
+			$new = Fadewatch_Status::evaluate( $item, $results[ $file ], $context );
 
 			if ( $old['status'] !== $new['status'] ) {
 				self::handle_change( $item, $old, $new, $baseline );
 			}
 		}
 
-		ABPC_Store::save_results( $results );
-		ABPC_Report::flush();
+		Fadewatch_Store::save_results( $results );
+		Fadewatch_Report::flush();
 
 		// Re-read: other requests may have added items meanwhile.
-		$state = ABPC_Store::state();
+		$state = Fadewatch_Store::state();
 		if ( ! empty( $leftover ) ) {
 			$state['queue'] = array_values( array_unique( array_merge( $leftover, $state['queue'] ) ) );
 		}
 		$state['done'] = min( $state['total'], $state['done'] + $processed );
-		ABPC_Store::save_state( $state );
+		Fadewatch_Store::save_state( $state );
 
 		$progress = self::progress( $state );
 
@@ -272,7 +272,7 @@ final class ABPC_Scanner {
 			$progress['complete'] = true;
 		}
 
-		ABPC_Store::unlock();
+		Fadewatch_Store::unlock();
 
 		return $progress;
 	}
@@ -333,20 +333,20 @@ final class ABPC_Scanner {
 		 * @param string $new_status New status.
 		 * @param array  $new        New evaluation, including closure reason and dates.
 		 */
-		do_action( 'abpc_status_changed', $item['file'], $old['status'], $new['status'], $new );
+		do_action( 'fadewatch_status_changed', $item['file'], $old['status'], $new['status'], $new );
 
 		// The first scan sets the baseline; its results are shown in the
 		// report and Site Health instead of being e-mailed.
-		if ( $baseline || ABPC_Status::PENDING === $old['status'] ) {
+		if ( $baseline || Fadewatch_Status::PENDING === $old['status'] ) {
 			return;
 		}
 
 		$type = '';
-		if ( ABPC_Status::CLOSED === $new['status'] ) {
+		if ( Fadewatch_Status::CLOSED === $new['status'] ) {
 			$type = 'closed';
-		} elseif ( ABPC_Status::ABANDONED === $new['status'] ) {
+		} elseif ( Fadewatch_Status::ABANDONED === $new['status'] ) {
 			$type = 'abandoned';
-		} elseif ( ABPC_Status::CLOSED === $old['status'] && ABPC_Status::UNKNOWN !== $new['status'] ) {
+		} elseif ( Fadewatch_Status::CLOSED === $old['status'] && Fadewatch_Status::UNKNOWN !== $new['status'] ) {
 			$type = 'reopened';
 		}
 
@@ -367,11 +367,11 @@ final class ABPC_Scanner {
 		);
 
 		if ( 'closed' === $type && 'security-issue' === $new['reason'] ) {
-			ABPC_Notifier::send_security_alert( $change );
+			Fadewatch_Notifier::send_security_alert( $change );
 			return;
 		}
 
-		ABPC_Store::add_change( $change );
+		Fadewatch_Store::add_change( $change );
 	}
 
 	/**
@@ -380,15 +380,15 @@ final class ABPC_Scanner {
 	 * @param array $state Final state.
 	 */
 	private static function finalize( array $state ) {
-		$meta    = ABPC_Store::meta();
-		$changes = ABPC_Store::pull_changes();
+		$meta    = Fadewatch_Store::meta();
+		$changes = Fadewatch_Store::pull_changes();
 
 		if ( $meta['baseline_done'] ) {
-			ABPC_Notifier::send_digest( $changes );
+			Fadewatch_Notifier::send_digest( $changes );
 		}
 
 		if ( ! empty( $state['full'] ) ) {
-			ABPC_Store::update_meta(
+			Fadewatch_Store::update_meta(
 				array(
 					'last_full_scan' => time(),
 					'baseline_done'  => true,
@@ -396,7 +396,7 @@ final class ABPC_Scanner {
 			);
 		}
 
-		ABPC_Store::save_state(
+		Fadewatch_Store::save_state(
 			array(
 				'queue'      => array(),
 				'total'      => 0,
@@ -411,19 +411,19 @@ final class ABPC_Scanner {
 		 *
 		 * @param array $results Stored results keyed by plugin file.
 		 */
-		do_action( 'abpc_scan_completed', ABPC_Store::results() );
+		do_action( 'fadewatch_scan_completed', Fadewatch_Store::results() );
 	}
 
 	/**
 	 * Re-checks closed plugins (they can reopen) and failed checks.
 	 */
 	public static function recheck_problem_items() {
-		if ( ABPC_Settings::scheduled_scans_paused() ) {
+		if ( Fadewatch_Settings::scheduled_scans_paused() ) {
 			return;
 		}
 
 		$files = array();
-		foreach ( ABPC_Store::results() as $file => $record ) {
+		foreach ( Fadewatch_Store::results() as $file => $record ) {
 			$errors = isset( $record['error_count'] ) ? (int) $record['error_count'] : 0;
 			$closed = isset( $record['result'] ) && 'closed' === $record['result'];
 			if ( $closed || ( $errors > 0 && $errors < self::MAX_FAST_RETRIES ) ) {
@@ -467,7 +467,7 @@ final class ABPC_Scanner {
 	 * @param string $file Plugin file.
 	 */
 	public static function on_activated( $file ) {
-		if ( plugin_basename( ABPC_FILE ) !== $file ) {
+		if ( plugin_basename( FADEWATCH_FILE ) !== $file ) {
 			self::enqueue( array( $file ) );
 		}
 	}
@@ -482,10 +482,10 @@ final class ABPC_Scanner {
 		if ( ! $deleted ) {
 			return;
 		}
-		$results = ABPC_Store::results();
+		$results = Fadewatch_Store::results();
 		if ( isset( $results[ $file ] ) ) {
 			unset( $results[ $file ] );
-			ABPC_Store::save_results( $results );
+			Fadewatch_Store::save_results( $results );
 		}
 	}
 
@@ -495,17 +495,17 @@ final class ABPC_Scanner {
 	 * queue a scan (it still runs in the background, not in this request).
 	 */
 	public static function maybe_fallback_scan() {
-		if ( ! ABPC_Settings::current_user_can() || ABPC_Settings::scheduled_scans_paused() ) {
+		if ( ! Fadewatch_Settings::current_user_can() || Fadewatch_Settings::scheduled_scans_paused() ) {
 			return;
 		}
 
-		$state = ABPC_Store::state();
+		$state = Fadewatch_Store::state();
 		if ( ! empty( $state['queue'] ) ) {
 			self::schedule_processing( 0 );
 			return;
 		}
 
-		if ( ( time() - (int) ABPC_Store::meta()['last_full_scan'] ) > self::FALLBACK_AFTER ) {
+		if ( ( time() - (int) Fadewatch_Store::meta()['last_full_scan'] ) > self::FALLBACK_AFTER ) {
 			self::start_full_scan( 'fallback' );
 		}
 	}
@@ -516,10 +516,10 @@ final class ABPC_Scanner {
 	 * @param array $items Installed plugins.
 	 */
 	private static function prune_results( array $items ) {
-		$results = ABPC_Store::results();
+		$results = Fadewatch_Store::results();
 		$pruned  = array_intersect_key( $results, $items );
 		if ( count( $pruned ) !== count( $results ) ) {
-			ABPC_Store::save_results( $pruned );
+			Fadewatch_Store::save_results( $pruned );
 		}
 	}
 

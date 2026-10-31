@@ -23,13 +23,13 @@ Fadewatch shows the maintenance status of every installed plugin, right on the P
 * **Not on WordPress.org**: premium or custom plugins, and plugins that get their updates elsewhere (Update URI header).
 * **Couldn't check**: WordPress.org could not be reached. This is never reported as "closed" or "not found".
 
-= No false alarms =
+= Built for accuracy =
 
 * A failed request never overwrites an earlier good result.
 * "Closed", "not found" and "couldn't check" are kept strictly apart.
 * If a custom plugin happens to use the same folder name as an unrelated WordPress.org plugin, its data is marked "Not verified" instead of showing the wrong plugin's status.
 
-= No slow admin pages =
+= Lightweight =
 
 All lookups run in the background (WP-Cron), in small batches. Opening the Plugins screen reads one stored option and makes no external requests. The plugin loads no code on the front end of your site.
 
@@ -47,23 +47,23 @@ All lookups run in the background (WP-Cron), in small batches. Opening the Plugi
 
 = Not a vulnerability scanner =
 
-This plugin checks **maintenance status**, not known vulnerabilities. It works well alongside a security plugin such as Wordfence, Patchstack, Jetpack Protect or WPVulnerability.
+This plugin checks **maintenance status**, not known vulnerabilities. It can be used alongside any security plugin.
 
 = For developers =
 
 Filters:
 
-* `abpc_plugin_slug` – map a plugin file to a different WordPress.org slug.
-* `abpc_skip_plugin` – exclude a plugin from checks.
-* `abpc_thresholds` – change the "ageing" and "possibly abandoned" thresholds (in months).
-* `abpc_status` – override the computed status.
-* `abpc_email_recipients` – change notification recipients.
+* `fadewatch_plugin_slug` – map a plugin file to a different WordPress.org slug.
+* `fadewatch_skip_plugin` – exclude a plugin from checks.
+* `fadewatch_thresholds` – change the "ageing" and "possibly abandoned" thresholds (in months).
+* `fadewatch_status` – override the computed status.
+* `fadewatch_email_recipients` – change notification recipients.
 
 Actions:
 
-* `abpc_status_changed( $plugin_file, $old_status, $new_status, $evaluation )`
-* `abpc_scan_started( $source )`
-* `abpc_scan_completed( $results )`
+* `fadewatch_status_changed( $plugin_file, $old_status, $new_status, $evaluation )`
+* `fadewatch_scan_started( $source )`
+* `fadewatch_scan_completed( $results )`
 
 == External services ==
 
@@ -89,7 +89,7 @@ The plugin was not found on WordPress.org. It is usually a premium plugin, a cus
 
 = What does "Not verified" mean? =
 
-A plugin on WordPress.org uses the same slug (folder name) as your installed plugin, but its name and author look different. To avoid a false alarm, its data is not used. Developers can map the plugin to the correct slug with the `abpc_plugin_slug` filter.
+A plugin on WordPress.org uses the same slug (folder name) as your installed plugin, but its name and author look different. To avoid a false alarm, its data is not used. Developers can map the plugin to the correct slug with the `fadewatch_plugin_slug` filter.
 
 = What does "Couldn't check" mean? =
 

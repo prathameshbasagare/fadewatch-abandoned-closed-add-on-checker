@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Site Health integration. Tests read stored data only.
  */
-final class ABPC_Site_Health {
+final class Fadewatch_Site_Health {
 
 	/**
 	 * Registers hooks.
@@ -26,11 +26,11 @@ final class ABPC_Site_Health {
 	 * @return array
 	 */
 	public static function register_tests( $tests ) {
-		$tests['direct']['abpc_closed_plugins'] = array(
+		$tests['direct']['fadewatch_closed_plugins'] = array(
 			'label' => __( 'Installed plugins closed on WordPress.org', 'fadewatch' ),
 			'test'  => array( __CLASS__, 'test_closed' ),
 		);
-		$tests['direct']['abpc_abandoned_plugins'] = array(
+		$tests['direct']['fadewatch_abandoned_plugins'] = array(
 			'label' => __( 'Plugins without updates for a long time', 'fadewatch' ),
 			'test'  => array( __CLASS__, 'test_abandoned' ),
 		);
@@ -43,7 +43,7 @@ final class ABPC_Site_Health {
 	 * @return array
 	 */
 	public static function test_closed() {
-		$closed   = self::rows_with_status( ABPC_Status::CLOSED );
+		$closed   = self::rows_with_status( Fadewatch_Status::CLOSED );
 		$security = array_filter(
 			$closed,
 			static function ( $row ) {
@@ -53,7 +53,7 @@ final class ABPC_Site_Health {
 
 		if ( empty( $closed ) ) {
 			return self::result(
-				'abpc_closed_plugins',
+				'fadewatch_closed_plugins',
 				'good',
 				self::has_data()
 					? __( 'No installed plugins have been closed on WordPress.org', 'fadewatch' )
@@ -69,7 +69,7 @@ final class ABPC_Site_Health {
 		}
 
 		return self::result(
-			'abpc_closed_plugins',
+			'fadewatch_closed_plugins',
 			$security ? 'critical' : 'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
@@ -87,8 +87,8 @@ final class ABPC_Site_Health {
 	 * @return array
 	 */
 	public static function test_abandoned() {
-		$rows       = self::rows_with_status( ABPC_Status::ABANDONED );
-		$thresholds = ABPC_Settings::thresholds();
+		$rows       = self::rows_with_status( Fadewatch_Status::ABANDONED );
+		$thresholds = Fadewatch_Settings::thresholds();
 
 		$description = sprintf(
 			/* translators: %d: number of months. */
@@ -98,7 +98,7 @@ final class ABPC_Site_Health {
 
 		if ( empty( $rows ) ) {
 			return self::result(
-				'abpc_abandoned_plugins',
+				'fadewatch_abandoned_plugins',
 				'good',
 				__( 'All checked plugins have been updated recently', 'fadewatch' ),
 				$description,
@@ -117,7 +117,7 @@ final class ABPC_Site_Health {
 		}
 
 		return self::result(
-			'abpc_abandoned_plugins',
+			'fadewatch_abandoned_plugins',
 			'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
@@ -150,10 +150,10 @@ final class ABPC_Site_Health {
 		}
 
 		$actions = '';
-		if ( ABPC_Settings::current_user_can() ) {
+		if ( Fadewatch_Settings::current_user_can() ) {
 			$actions = sprintf(
 				'<p><a href="%1$s">%2$s</a></p>',
-				esc_url( ABPC_Admin::page_url() ),
+				esc_url( Fadewatch_Admin::page_url() ),
 				esc_html__( 'View the plugin maintenance report', 'fadewatch' )
 			);
 		}
@@ -179,7 +179,7 @@ final class ABPC_Site_Health {
 	 */
 	private static function rows_with_status( $status ) {
 		return array_filter(
-			ABPC_Report::rows(),
+			Fadewatch_Report::rows(),
 			static function ( $row ) use ( $status ) {
 				return $status === $row['eval']['status'];
 			}
@@ -192,6 +192,6 @@ final class ABPC_Site_Health {
 	 * @return bool
 	 */
 	private static function has_data() {
-		return (bool) ABPC_Store::meta()['last_full_scan'] || ! empty( ABPC_Store::results() );
+		return (bool) Fadewatch_Store::meta()['last_full_scan'] || ! empty( Fadewatch_Store::results() );
 	}
 }

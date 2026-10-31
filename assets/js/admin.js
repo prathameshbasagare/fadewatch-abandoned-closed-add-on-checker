@@ -5,11 +5,11 @@
 ( function () {
 	'use strict';
 
-	var cfg = window.abpcAdmin;
-	var button = document.getElementById( 'abpc-check-now' );
-	var box = document.getElementById( 'abpc-progress' );
-	var bar = document.getElementById( 'abpc-progress-bar' );
-	var text = document.getElementById( 'abpc-progress-text' );
+	var cfg = window.fadewatchAdmin;
+	var button = document.getElementById( 'fadewatch-check-now' );
+	var box = document.getElementById( 'fadewatch-progress' );
+	var bar = document.getElementById( 'fadewatch-progress-bar' );
+	var text = document.getElementById( 'fadewatch-progress-text' );
 
 	if ( ! cfg || ! button || ! box || ! bar || ! text ) {
 		return;
@@ -75,13 +75,13 @@
 		text.textContent = cfg.i18n.starting;
 
 		try {
-			var data = startNew ? await request( 'abpc_scan_start' ) : { complete: false };
+			var data = startNew ? await request( 'fadewatch_scan_start' ) : { complete: false };
 
 			while ( ! data.complete ) {
 				if ( data.busy ) {
 					await sleep( 3000 );
 				}
-				data = await request( 'abpc_scan_step' );
+				data = await request( 'fadewatch_scan_step' );
 				show( data );
 			}
 

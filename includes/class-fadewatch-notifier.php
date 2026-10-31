@@ -10,17 +10,17 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Notifier.
  */
-final class ABPC_Notifier {
+final class Fadewatch_Notifier {
 
 	/**
 	 * Sends one e-mail summarising changes since the last scan.
 	 * Nothing is sent when nothing changed.
 	 *
-	 * @param array $changes Changes from ABPC_Store::pull_changes().
+	 * @param array $changes Changes from Fadewatch_Store::pull_changes().
 	 * @return bool Whether an e-mail was sent.
 	 */
 	public static function send_digest( array $changes ) {
-		if ( empty( $changes ) || 'off' === ABPC_Settings::get( 'notify' ) ) {
+		if ( empty( $changes ) || 'off' === Fadewatch_Settings::get( 'notify' ) ) {
 			return false;
 		}
 
@@ -51,7 +51,7 @@ final class ABPC_Notifier {
 		}
 
 		if ( $groups['abandoned'] ) {
-			$thresholds = ABPC_Settings::thresholds();
+			$thresholds = Fadewatch_Settings::thresholds();
 			$lines[]    = sprintf(
 				/* translators: %d: number of months. */
 				_n( 'Possibly abandoned (no update in over %d month):', 'Possibly abandoned (no update in over %d months):', $thresholds['abandoned'], 'fadewatch' ),
@@ -91,7 +91,7 @@ final class ABPC_Notifier {
 	 * @return bool
 	 */
 	public static function send_security_alert( array $change ) {
-		if ( 'off' === ABPC_Settings::get( 'notify' ) ) {
+		if ( 'off' === Fadewatch_Settings::get( 'notify' ) ) {
 			return false;
 		}
 
@@ -121,13 +121,13 @@ final class ABPC_Notifier {
 	 * @return bool
 	 */
 	public static function send_weekly_summary() {
-		if ( 'weekly' !== ABPC_Settings::get( 'notify' ) ) {
+		if ( 'weekly' !== Fadewatch_Settings::get( 'notify' ) ) {
 			return false;
 		}
 
 		$closed    = array();
 		$abandoned = array();
-		foreach ( ABPC_Report::rows() as $row ) {
+		foreach ( Fadewatch_Report::rows() as $row ) {
 			$change = array(
 				'name'         => $row['item']['name'],
 				'slug'         => $row['item']['slug'],
@@ -135,9 +135,9 @@ final class ABPC_Notifier {
 				'reason_text'  => $row['eval']['reason_text'],
 				'last_updated' => $row['eval']['last_updated'],
 			);
-			if ( ABPC_Status::CLOSED === $row['eval']['status'] ) {
+			if ( Fadewatch_Status::CLOSED === $row['eval']['status'] ) {
 				$closed[] = self::closed_line( $change );
-			} elseif ( ABPC_Status::ABANDONED === $row['eval']['status'] ) {
+			} elseif ( Fadewatch_Status::ABANDONED === $row['eval']['status'] ) {
 				$abandoned[] = self::abandoned_line( $change );
 			}
 		}
@@ -183,14 +183,14 @@ final class ABPC_Notifier {
 	 * @return bool
 	 */
 	private static function send( $subject, array $lines ) {
-		$recipients = ABPC_Settings::recipients();
+		$recipients = Fadewatch_Settings::recipients();
 		if ( empty( $recipients ) ) {
 			return false;
 		}
 
-		$lines[] = __( 'Full report:', 'fadewatch' ) . ' ' . ABPC_Admin::page_url();
+		$lines[] = __( 'Full report:', 'fadewatch' ) . ' ' . Fadewatch_Admin::page_url();
 		$lines[] = '';
-		$lines[] = __( 'You receive this e-mail because notifications are enabled in Fadewatch. Change this here:', 'fadewatch' ) . ' ' . ABPC_Admin::page_url( 'settings' );
+		$lines[] = __( 'You receive this e-mail because notifications are enabled in Fadewatch. Change this here:', 'fadewatch' ) . ' ' . Fadewatch_Admin::page_url( 'settings' );
 
 		return wp_mail( $recipients, $subject, implode( "\n", $lines ) );
 	}
@@ -205,7 +205,7 @@ final class ABPC_Notifier {
 		$parts = array( self::name_line( $change ) );
 		if ( ! empty( $change['closed_date'] ) ) {
 			/* translators: %s: date. */
-			$parts[] = sprintf( __( 'closed on %s', 'fadewatch' ), ABPC_Render::format_ymd( $change['closed_date'] ) );
+			$parts[] = sprintf( __( 'closed on %s', 'fadewatch' ), Fadewatch_Render::format_ymd( $change['closed_date'] ) );
 		}
 		if ( ! empty( $change['reason_text'] ) ) {
 			/* translators: %s: closure reason, e.g. "Security Issue". */

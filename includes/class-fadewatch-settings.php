@@ -13,9 +13,9 @@ defined( 'ABSPATH' ) || exit;
  * Stored as a single network option (a normal, non-autoloaded option on
  * single sites) because plugins are managed network-wide.
  */
-final class ABPC_Settings {
+final class Fadewatch_Settings {
 
-	const OPTION = 'abpc_settings';
+	const OPTION = 'fadewatch_settings';
 
 	/**
 	 * Request cache.
@@ -134,7 +134,7 @@ final class ABPC_Settings {
 		 *
 		 * @param string[] $list E-mail addresses.
 		 */
-		$list = apply_filters( 'abpc_email_recipients', $list );
+		$list = apply_filters( 'fadewatch_email_recipients', $list );
 
 		return array_values( array_filter( (array) $list, 'is_email' ) );
 	}
@@ -155,7 +155,7 @@ final class ABPC_Settings {
 		 *
 		 * @param array{ageing:int, abandoned:int} $thresholds Thresholds.
 		 */
-		$filtered = apply_filters( 'abpc_thresholds', $thresholds );
+		$filtered = apply_filters( 'fadewatch_thresholds', $thresholds );
 
 		$ageing    = isset( $filtered['ageing'] ) ? max( 1, (int) $filtered['ageing'] ) : $thresholds['ageing'];
 		$abandoned = isset( $filtered['abandoned'] ) ? max( $ageing + 1, (int) $filtered['abandoned'] ) : $thresholds['abandoned'];

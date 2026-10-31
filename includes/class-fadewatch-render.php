@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Render helpers.
  */
-final class ABPC_Render {
+final class Fadewatch_Render {
 
 	/**
 	 * Dashicon per status. Colour is never the only signal: every badge
@@ -22,15 +22,15 @@ final class ABPC_Render {
 	 */
 	public static function icon( $status ) {
 		$icons = array(
-			ABPC_Status::MAINTAINED => 'dashicons-yes-alt',
-			ABPC_Status::AGEING     => 'dashicons-clock',
-			ABPC_Status::ABANDONED  => 'dashicons-warning',
-			ABPC_Status::CLOSED     => 'dashicons-dismiss',
-			ABPC_Status::NOT_ON_ORG => 'dashicons-external',
-			ABPC_Status::UNKNOWN    => 'dashicons-editor-help',
-			ABPC_Status::UNVERIFIED => 'dashicons-flag',
-			ABPC_Status::PENDING    => 'dashicons-update',
-			ABPC_Status::SKIPPED    => 'dashicons-minus',
+			Fadewatch_Status::MAINTAINED => 'dashicons-yes-alt',
+			Fadewatch_Status::AGEING     => 'dashicons-clock',
+			Fadewatch_Status::ABANDONED  => 'dashicons-warning',
+			Fadewatch_Status::CLOSED     => 'dashicons-dismiss',
+			Fadewatch_Status::NOT_ON_ORG => 'dashicons-external',
+			Fadewatch_Status::UNKNOWN    => 'dashicons-editor-help',
+			Fadewatch_Status::UNVERIFIED => 'dashicons-flag',
+			Fadewatch_Status::PENDING    => 'dashicons-update',
+			Fadewatch_Status::SKIPPED    => 'dashicons-minus',
 		);
 		return isset( $icons[ $status ] ) ? $icons[ $status ] : 'dashicons-marker';
 	}
@@ -42,13 +42,13 @@ final class ABPC_Render {
 	 * @return string Escaped HTML.
 	 */
 	public static function badge( array $eval ) {
-		$label = ABPC_Status::label( $eval['status'] );
-		if ( ABPC_Status::CLOSED === $eval['status'] && 'security-issue' === $eval['reason'] ) {
+		$label = Fadewatch_Status::label( $eval['status'] );
+		if ( Fadewatch_Status::CLOSED === $eval['status'] && 'security-issue' === $eval['reason'] ) {
 			$label = __( 'Closed: security issue', 'fadewatch' );
 		}
 
 		return sprintf(
-			'<span class="abpc-badge abpc-status--%1$s abpc-severity--%2$s"><span class="dashicons %3$s" aria-hidden="true"></span>%4$s</span>',
+			'<span class="fadewatch-badge fadewatch-status--%1$s fadewatch-severity--%2$s"><span class="dashicons %3$s" aria-hidden="true"></span>%4$s</span>',
 			esc_attr( $eval['status'] ),
 			esc_attr( $eval['severity'] ),
 			esc_attr( self::icon( $eval['status'] ) ),
@@ -68,7 +68,7 @@ final class ABPC_Render {
 		$lines = array();
 
 		switch ( $eval['status'] ) {
-			case ABPC_Status::CLOSED:
+			case Fadewatch_Status::CLOSED:
 				$date = $eval['closed_date'] ? self::format_ymd( $eval['closed_date'] ) : __( 'an unknown date', 'fadewatch' );
 				if ( $eval['reason_text'] ) {
 					/* translators: 1: date, 2: closure reason such as "Security Issue". */
@@ -86,9 +86,9 @@ final class ABPC_Render {
 				}
 				break;
 
-			case ABPC_Status::MAINTAINED:
-			case ABPC_Status::AGEING:
-			case ABPC_Status::ABANDONED:
+			case Fadewatch_Status::MAINTAINED:
+			case Fadewatch_Status::AGEING:
+			case Fadewatch_Status::ABANDONED:
 				if ( $eval['last_updated'] ) {
 					$lines[] = sprintf(
 						/* translators: 1: relative time such as "3 years", 2: date. */
@@ -99,7 +99,7 @@ final class ABPC_Render {
 				}
 				break;
 
-			case ABPC_Status::NOT_ON_ORG:
+			case Fadewatch_Status::NOT_ON_ORG:
 				if ( 'update_uri' === $eval['note'] ) {
 					$lines[] = __( 'Gets updates from another source (Update URI header).', 'fadewatch' );
 				} elseif ( 'premium' === $eval['note'] ) {
@@ -109,7 +109,7 @@ final class ABPC_Render {
 				}
 				break;
 
-			case ABPC_Status::UNVERIFIED:
+			case Fadewatch_Status::UNVERIFIED:
 				$lines[] = sprintf(
 					/* translators: 1: plugin slug, 2: name of the WordPress.org plugin. */
 					__( 'The WordPress.org plugin "%1$s" is called "%2$s" and looks like a different plugin, so its data is not used.', 'fadewatch' ),
@@ -118,18 +118,18 @@ final class ABPC_Render {
 				);
 				break;
 
-			case ABPC_Status::UNKNOWN:
+			case Fadewatch_Status::UNKNOWN:
 				$lines[] = $eval['error']
 					/* translators: %s: error message. */
 					? sprintf( __( 'Could not reach WordPress.org (%s). It will be retried.', 'fadewatch' ), $eval['error'] )
 					: __( 'Could not read the data from WordPress.org. It will be retried.', 'fadewatch' );
 				break;
 
-			case ABPC_Status::PENDING:
+			case Fadewatch_Status::PENDING:
 				$lines[] = __( 'Waiting for the first check.', 'fadewatch' );
 				break;
 
-			case ABPC_Status::SKIPPED:
+			case Fadewatch_Status::SKIPPED:
 				if ( 'inactive' === $eval['note'] ) {
 					$lines[] = __( 'Inactive plugins are excluded in the settings.', 'fadewatch' );
 				} elseif ( 'filtered' === $eval['note'] ) {
@@ -140,7 +140,7 @@ final class ABPC_Render {
 				break;
 		}
 
-		if ( $eval['tested_behind'] >= ABPC_Status::TESTED_BEHIND_WARNING && is_array( $record ) && ! empty( $record['tested'] ) ) {
+		if ( $eval['tested_behind'] >= Fadewatch_Status::TESTED_BEHIND_WARNING && is_array( $record ) && ! empty( $record['tested'] ) ) {
 			$lines[] = sprintf(
 				/* translators: 1: number of releases, 2: version such as "6.2". */
 				_n(
@@ -160,7 +160,7 @@ final class ABPC_Render {
 				__( 'Data out of date: last successful check %s ago.', 'fadewatch' ),
 				human_time_diff( (int) $record['checked_at'] )
 			);
-		} elseif ( ABPC_Status::UNKNOWN !== $eval['status'] && $eval['error'] ) {
+		} elseif ( Fadewatch_Status::UNKNOWN !== $eval['status'] && $eval['error'] ) {
 			/* translators: %s: error message. */
 			$lines[] = sprintf( __( 'Last check failed (%s); showing the previous result.', 'fadewatch' ), $eval['error'] );
 		}
@@ -179,7 +179,7 @@ final class ABPC_Render {
 	public static function details_html( array $eval, array $item, $record ) {
 		$html = '';
 		foreach ( self::details( $eval, $item, $record ) as $line ) {
-			$html .= '<span class="abpc-detail">' . esc_html( $line ) . '</span>';
+			$html .= '<span class="fadewatch-detail">' . esc_html( $line ) . '</span>';
 		}
 		return $html;
 	}
@@ -191,7 +191,7 @@ final class ABPC_Render {
 	 * @return string
 	 */
 	public static function format_ymd( $ymd ) {
-		$ts = ABPC_API::parse_date( $ymd );
+		$ts = Fadewatch_API::parse_date( $ymd );
 		return $ts ? wp_date( get_option( 'date_format' ), $ts, new DateTimeZone( 'UTC' ) ) : $ymd;
 	}
 
@@ -212,6 +212,6 @@ final class ABPC_Render {
 	 * @return bool
 	 */
 	public static function has_org_page( array $eval ) {
-		return in_array( $eval['status'], array( ABPC_Status::MAINTAINED, ABPC_Status::AGEING, ABPC_Status::ABANDONED, ABPC_Status::CLOSED ), true );
+		return in_array( $eval['status'], array( Fadewatch_Status::MAINTAINED, Fadewatch_Status::AGEING, Fadewatch_Status::ABANDONED, Fadewatch_Status::CLOSED ), true );
 	}
 }

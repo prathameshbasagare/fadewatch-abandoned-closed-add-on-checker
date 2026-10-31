@@ -12,16 +12,16 @@ defined( 'ABSPATH' ) || exit;
  * capability. The browser drives the batches, so "Check now" also works
  * when WP-Cron is disabled or broken.
  */
-final class ABPC_Ajax {
+final class Fadewatch_Ajax {
 
-	const NONCE = 'abpc_scan';
+	const NONCE = 'fadewatch_scan';
 
 	/**
 	 * Registers hooks (logged-in users only; there is no nopriv handler).
 	 */
 	public static function register_hooks() {
-		add_action( 'wp_ajax_abpc_scan_start', array( __CLASS__, 'start' ) );
-		add_action( 'wp_ajax_abpc_scan_step', array( __CLASS__, 'step' ) );
+		add_action( 'wp_ajax_fadewatch_scan_start', array( __CLASS__, 'start' ) );
+		add_action( 'wp_ajax_fadewatch_scan_step', array( __CLASS__, 'step' ) );
 	}
 
 	/**
@@ -29,7 +29,7 @@ final class ABPC_Ajax {
 	 */
 	public static function start() {
 		self::authorize();
-		wp_send_json_success( ABPC_Scanner::start_full_scan( 'manual' ) );
+		wp_send_json_success( Fadewatch_Scanner::start_full_scan( 'manual' ) );
 	}
 
 	/**
@@ -37,7 +37,7 @@ final class ABPC_Ajax {
 	 */
 	public static function step() {
 		self::authorize();
-		wp_send_json_success( ABPC_Scanner::process_batch() );
+		wp_send_json_success( Fadewatch_Scanner::process_batch() );
 	}
 
 	/**
@@ -47,7 +47,7 @@ final class ABPC_Ajax {
 		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'Your session has expired. Please reload the page.', 'fadewatch' ) ), 403 );
 		}
-		if ( ! ABPC_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::current_user_can() ) {
 			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to do that.', 'fadewatch' ) ), 403 );
 		}
 	}
