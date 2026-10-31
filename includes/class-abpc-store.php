@@ -2,7 +2,7 @@
 /**
  * Persistent storage for results, scan state and change log.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;

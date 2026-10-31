@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Abandoned Plugin Checker
+ * Plugin Name:       Stalewatch – Abandoned & Closed Plugin Checker
  * Description:       Shows which installed plugins have been closed on WordPress.org (and why), which haven't been updated in years, and which can't be checked.
  * Version:           1.0.0
  * Requires at least: 6.4
@@ -9,10 +9,10 @@
  * Author URI:        https://profiles.wordpress.org/curiouswpdev/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       abandoned-plugin-checker
+ * Text Domain:       stalewatch
  * Network:           true
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -21,7 +21,7 @@ define( 'ABPC_VERSION', '1.0.0' );
 define( 'ABPC_FILE', __FILE__ );
 define( 'ABPC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ABPC_URL', plugin_dir_url( __FILE__ ) );
-define( 'ABPC_SLUG', 'abandoned-plugin-checker' );
+define( 'ABPC_SLUG', 'stalewatch' );
 
 require_once ABPC_DIR . 'includes/class-abpc-settings.php';
 require_once ABPC_DIR . 'includes/class-abpc-store.php';

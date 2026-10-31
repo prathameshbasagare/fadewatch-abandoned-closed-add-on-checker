@@ -1,4 +1,4 @@
-# Abandoned Plugin Checker
+# Stalewatch – Abandoned & Closed Plugin Checker
 
 Find out which of your WordPress plugins have been **closed on WordPress.org (and why)**, which haven't been updated in years, and which can't be checked.
 
@@ -74,7 +74,7 @@ add_filter( 'abpc_plugin_slug', function ( $slug, $file ) {
 ## Project structure
 
 ```
-abandoned-plugin-checker.php       Bootstrap, constants, activation hooks
+stalewatch.php                     Bootstrap, constants, activation hooks
 uninstall.php                      Removes options and scheduled events
 includes/
   class-abpc-api.php               WordPress.org Plugins API client and response parsing
@@ -100,7 +100,7 @@ assets/                            Admin CSS and dependency-free JS
 Build the release zip from the `release` branch. `git archive` includes committed files only, so the `.git` folder stays out:
 
 ```sh
-git archive --format=zip --prefix=abandoned-plugin-checker/ release -o ../abandoned-plugin-checker.zip
+git archive --format=zip --prefix=stalewatch/ release -o ../stalewatch.zip
 ```
 
 Run [Plugin Check](https://wordpress.org/plugins/plugin-check/) before every release.

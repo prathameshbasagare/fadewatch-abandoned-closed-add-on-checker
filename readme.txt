@@ -1,4 +1,4 @@
-=== Abandoned Plugin Checker ===
+=== Stalewatch – Abandoned & Closed Plugin Checker ===
 Contributors: curiouswpdev
 Tags: abandoned plugins, closed plugins, plugin maintenance, site health, security
 Requires at least: 6.4
@@ -14,7 +14,7 @@ Find out which of your plugins are closed on WordPress.org (and why), which have
 
 **Know which plugins are dead before they become a security problem.**
 
-Abandoned Plugin Checker shows the maintenance status of every installed plugin, right on the Plugins screen:
+Stalewatch shows the maintenance status of every installed plugin, right on the Plugins screen:
 
 * **Closed** on WordPress.org, with the **date and reason** (for example "Closed on 27 Jul 2023: Security Issue").
 * **Possibly abandoned**: no update in over 24 months (configurable).
@@ -69,7 +69,7 @@ Actions:
 
 This plugin connects to the **WordPress.org Plugins API** (`https://api.wordpress.org/plugins/info/1.2/`) to look up the maintenance status of installed plugins: last update date, whether the plugin was closed and why, "tested up to" version, rating and active installs.
 
-* **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `AbandonedPluginChecker/<version>` and does not include your site address.
+* **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `Stalewatch/<version>` and does not include your site address.
 * **When:** once a day in the background, every 6 hours for closed plugins and failed checks, right after a plugin is installed, updated or activated, and when an administrator clicks "Check now".
 * No personal data about your visitors or users is sent.
 

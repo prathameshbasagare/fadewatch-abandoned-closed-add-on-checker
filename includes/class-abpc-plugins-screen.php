@@ -2,7 +2,7 @@
 /**
  * "Maintenance" column, filter links and sorting on the Plugins screen.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -72,7 +72,7 @@ final class ABPC_Plugins_Screen {
 	 * @return array
 	 */
 	public static function add_column( $columns ) {
-		$columns[ self::COLUMN ] = __( 'Maintenance', 'abandoned-plugin-checker' );
+		$columns[ self::COLUMN ] = __( 'Maintenance', 'stalewatch' );
 		return $columns;
 	}
 
@@ -102,7 +102,7 @@ final class ABPC_Plugins_Screen {
 		}
 
 		if ( in_array( self::plugin_status(), array( 'mustuse', 'dropins' ), true ) ) {
-			echo '<span class="abpc-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'abandoned-plugin-checker' ) . '</span>';
+			echo '<span class="abpc-detail">' . esc_html__( 'Not checked (must-use plugin or drop-in)', 'stalewatch' ) . '</span>';
 			return;
 		}
 
@@ -120,8 +120,8 @@ final class ABPC_Plugins_Screen {
 			printf(
 				'<a class="abpc-detail" href="%1$s" target="_blank" rel="noopener noreferrer">%2$s<span class="screen-reader-text"> %3$s</span></a>',
 				esc_url( ABPC_Render::org_url( $row['item']['slug'] ) ),
-				esc_html__( 'View on WordPress.org', 'abandoned-plugin-checker' ),
-				esc_html__( '(opens in a new tab)', 'abandoned-plugin-checker' )
+				esc_html__( 'View on WordPress.org', 'stalewatch' ),
+				esc_html__( '(opens in a new tab)', 'stalewatch' )
 			);
 		}
 	}

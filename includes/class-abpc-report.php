@@ -2,7 +2,7 @@
 /**
  * Combines installed plugins with stored data into report rows.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;

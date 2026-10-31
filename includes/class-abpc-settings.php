@@ -2,7 +2,7 @@
 /**
  * Settings storage, defaults and sanitisation.
  *
- * @package AbandonedPluginChecker
+ * @package Stalewatch
  */
 
 defined( 'ABSPATH' ) || exit;
