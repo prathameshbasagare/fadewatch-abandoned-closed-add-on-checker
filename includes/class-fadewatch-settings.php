@@ -125,6 +125,7 @@ final class Fadewatch_Settings {
 				'consent_at' => time(),
 			)
 		);
+		delete_site_transient( Fadewatch_Admin::PROMPT_FLAG );
 	}
 
 	/**

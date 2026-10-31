@@ -15,6 +15,16 @@ final class Fadewatch_Admin {
 
 	const PAGE = 'fadewatch';
 
+	/** Set on activation; shows the consent prompt once on the Plugins screen. */
+	const PROMPT_FLAG = 'fadewatch_consent_prompt';
+
+	/**
+	 * Whether the one-time activation prompt is shown in this request.
+	 *
+	 * @var bool
+	 */
+	private static $activation_prompt = false;
+
 	/**
 	 * Page hook suffix.
 	 *
@@ -32,6 +42,7 @@ final class Fadewatch_Admin {
 		add_action( 'admin_post_fadewatch_export_csv', array( __CLASS__, 'handle_export_csv' ) );
 		add_action( 'admin_post_fadewatch_grant_consent', array( __CLASS__, 'handle_grant_consent' ) );
 		add_action( 'admin_init', array( __CLASS__, 'add_privacy_policy_content' ) );
+		add_action( 'load-plugins.php', array( __CLASS__, 'maybe_activation_prompt' ) );
 
 		$basename = plugin_basename( FADEWATCH_FILE );
 		add_filter( 'plugin_action_links_' . $basename, array( __CLASS__, 'action_links' ) );
@@ -81,7 +92,8 @@ final class Fadewatch_Admin {
 
 		wp_enqueue_style( 'fadewatch-admin', FADEWATCH_URL . 'assets/css/admin.css', array( 'dashicons' ), FADEWATCH_VERSION );
 
-		if ( ! $is_page ) {
+		// The Plugins screen only needs the script for the one-time prompt.
+		if ( ! $is_page && ! self::$activation_prompt ) {
 			return;
 		}
 
@@ -90,7 +102,7 @@ final class Fadewatch_Admin {
 		$state   = Fadewatch_Store::state();
 		$meta    = Fadewatch_Store::meta();
 		$allowed = Fadewatch_Settings::checks_allowed();
-		$report  = ! self::is_settings_tab();
+		$report  = $is_page && ! self::is_settings_tab();
 
 		wp_localize_script(
 			'fadewatch-admin',
@@ -98,8 +110,9 @@ final class Fadewatch_Admin {
 			array(
 				'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
 				'nonce'       => wp_create_nonce( Fadewatch_Ajax::NONCE ),
-				// Ask for consent on the report page until checks are allowed.
-				'askConsent'  => ! $allowed && $report,
+				// Ask for consent on the report page until checks are allowed,
+				// and once on the Plugins screen right after activation.
+				'askConsent'  => ! $allowed && ( $report || self::$activation_prompt ),
 				// Continue an unfinished scan in the browser (covers broken WP-Cron),
 				// or run the very first scan if none has completed yet.
 				'resume'      => $allowed && ! empty( $state['queue'] ),
@@ -368,9 +381,9 @@ final class Fadewatch_Admin {
 	}
 
 	/**
-	 * Opt-in: an inline panel (works without JavaScript) and a dialog that
-	 * opens automatically. Nothing is sent to WordPress.org until the
-	 * administrator clicks "Allow checks and scan now".
+	 * Opt-in on the report page: an inline panel (works without JavaScript)
+	 * and a dialog that opens automatically. Nothing is sent to
+	 * WordPress.org until the administrator clicks "Allow checks and scan now".
 	 */
 	private static function render_consent() {
 		?>
@@ -379,13 +392,60 @@ final class Fadewatch_Admin {
 				<strong><?php esc_html_e( 'Checks are off.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></strong>
 				<?php esc_html_e( 'Fadewatch needs your permission before it looks up your plugins on WordPress.org.', 'fadewatch-abandoned-closed-add-on-checker' ); ?>
 			</p>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="fadewatch-consent-form">
-				<input type="hidden" name="action" value="fadewatch_grant_consent" />
-				<?php wp_nonce_field( 'fadewatch_grant_consent' ); ?>
-				<button type="submit" class="button button-primary"><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
-			</form>
+			<?php self::render_consent_form( true ); ?>
 		</div>
+		<?php
+		self::render_consent_dialog();
+	}
 
+	/**
+	 * The form that records consent. The dialog's "Allow" button submits it
+	 * through its `form` attribute.
+	 *
+	 * @param bool $show_button Whether to show its own submit button.
+	 */
+	private static function render_consent_form( $show_button ) {
+		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" id="fadewatch-consent-form">
+			<input type="hidden" name="action" value="fadewatch_grant_consent" />
+			<?php wp_nonce_field( 'fadewatch_grant_consent' ); ?>
+			<?php if ( $show_button ) : ?>
+				<button type="submit" class="button button-primary"><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+			<?php endif; ?>
+		</form>
+		<?php
+	}
+
+	/**
+	 * One-time prompt on the Plugins screen right after activation, so the
+	 * administrator learns that Fadewatch needs consent before it can work.
+	 * Shown once (the flag is deleted when it is displayed).
+	 */
+	public static function maybe_activation_prompt() {
+		if ( ! get_site_transient( self::PROMPT_FLAG ) ) {
+			return;
+		}
+		if ( ! Fadewatch_Settings::current_user_can() || Fadewatch_Settings::checks_allowed() || ( is_multisite() && ! is_network_admin() ) ) {
+			return;
+		}
+
+		delete_site_transient( self::PROMPT_FLAG );
+		self::$activation_prompt = true;
+
+		add_action(
+			'admin_footer',
+			static function () {
+				self::render_consent_form( false );
+				self::render_consent_dialog();
+			}
+		);
+	}
+
+	/**
+	 * The consent dialog.
+	 */
+	private static function render_consent_dialog() {
+		?>
 		<dialog id="fadewatch-consent-dialog" class="fadewatch-dialog" aria-labelledby="fadewatch-consent-title" aria-describedby="fadewatch-consent-desc">
 			<h2 id="fadewatch-consent-title"><?php esc_html_e( 'Allow Fadewatch to check your plugins?', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
 			<p id="fadewatch-consent-desc"><?php esc_html_e( 'To show whether your plugins are maintained, closed or abandoned, Fadewatch looks them up in the WordPress.org Plugins API (api.wordpress.org).', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
