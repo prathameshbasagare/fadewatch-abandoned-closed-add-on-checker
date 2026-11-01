@@ -1,5 +1,9 @@
 # Fadewatch – Abandoned & Closed Add-on Checker
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![WordPress](https://img.shields.io/badge/WordPress-6.4%2B-blue.svg)](https://wordpress.org)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-green.svg)](https://php.net)
+
 Find out which of your WordPress plugins have been **closed on WordPress.org (and why)**, which haven't been updated in years, and which can't be checked.
 
 > `readme.txt` is the official readme used by the WordPress.org plugin directory. This file is for developers browsing the source.
@@ -112,4 +116,4 @@ Nothing is sent before an administrator allows checks. After that, only plugin s
 
 ## License
 
-GPL-3.0-or-later. See [LICENSE](LICENSE) or <https://www.gnu.org/licenses/gpl-3.0.html>.
+This plugin is free software, licensed under the [GNU General Public License v3 or later (GPLv3+)](https://www.gnu.org/licenses/gpl-3.0.html). See [LICENSE](LICENSE) for the full text.
