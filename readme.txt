@@ -5,8 +5,8 @@ Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.1
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Find out which of your plugins are closed on WordPress.org (and why), which haven't been updated in years, and which can't be checked.
 
