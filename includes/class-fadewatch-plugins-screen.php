@@ -111,6 +111,13 @@ final class Fadewatch_Plugins_Screen {
 			return;
 		}
 
+		// Checks are off: offer to turn them on instead of a "Pending" badge.
+		if ( ! Fadewatch_Settings::checks_allowed() ) {
+			echo '<span class="fadewatch-detail">' . esc_html__( 'Not checked: checks are off.', 'fadewatch-abandoned-closed-add-on-checker' ) . '</span> ';
+			Fadewatch_Admin::render_consent_button( 'button-link' );
+			return;
+		}
+
 		$row = $rows[ $plugin_file ];
 
 		echo Fadewatch_Render::badge( $row['eval'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::badge().

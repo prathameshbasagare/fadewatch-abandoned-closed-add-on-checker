@@ -1,5 +1,5 @@
 /**
- * Report page: opt-in dialog and "Check now".
+ * Report page and Plugins screen: opt-in dialog and "Check now".
  *
  * Runs the scan queue batch by batch from the browser, so checks also work
  * when WP-Cron is disabled or broken. No dependencies.
@@ -26,8 +26,20 @@
 			} );
 		} );
 
-		if ( cfg.askConsent && typeof dialog.showModal === 'function' ) {
-			dialog.showModal();
+		// "Allow checks" opens the dialog. If the browser has no <dialog>
+		// support, the button falls back to submitting the consent form.
+		if ( typeof dialog.showModal === 'function' ) {
+			Array.prototype.forEach.call( document.querySelectorAll( '[data-fadewatch-open-consent]' ), function ( button ) {
+				button.addEventListener( 'click', function ( event ) {
+					event.preventDefault();
+					dialog.showModal();
+				} );
+			} );
+
+			// Opens by itself only once, right after activation.
+			if ( cfg.autoConsent ) {
+				dialog.showModal();
+			}
 		}
 	}
 

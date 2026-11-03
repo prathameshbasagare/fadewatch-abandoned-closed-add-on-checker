@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Fadewatch – Abandoned & Closed Add-on Checker
  * Description:       Shows which installed plugins have been closed on WordPress.org (and why), which haven't been updated in years, and which can't be checked.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            curiouswpdev
@@ -27,7 +27,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FADEWATCH_VERSION', '1.0.1' );
+define( 'FADEWATCH_VERSION', '1.0.2' );
 define( 'FADEWATCH_FILE', __FILE__ );
 define( 'FADEWATCH_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FADEWATCH_URL', plugin_dir_url( __FILE__ ) );
