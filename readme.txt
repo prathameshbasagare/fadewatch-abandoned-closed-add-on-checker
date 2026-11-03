@@ -4,7 +4,7 @@ Tags: abandoned plugins, plugin maintenance, plugins, site health, security
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -130,6 +130,11 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 
 == Changelog ==
 
+= 1.0.2 =
+* Changed: the permission dialog opens by itself only once, right after activation. After that it opens only when you click "Allow checks".
+* New: while checks are off, the Plugin Maintenance page explains what the checks do, and the Maintenance column on the Plugins screen offers "Allow checks".
+* New: the permission dialog says where checks can be turned off again.
+
 = 1.0.1 =
 * New: opt-in. Fadewatch asks an administrator before contacting WordPress.org, and checks can be turned off in the settings.
 * New: right after activation, the permission prompt is shown once on the Plugins screen.
@@ -138,6 +143,9 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+The permission dialog no longer opens by itself except once after activation.
 
 = 1.0.1 =
 Fadewatch now asks for permission before contacting WordPress.org. Open Tools → Plugin Maintenance and click "Allow checks and scan now".
