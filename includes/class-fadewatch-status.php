@@ -54,15 +54,15 @@ final class Fadewatch_Status {
 	 */
 	public static function labels() {
 		return array(
-			self::MAINTAINED => __( 'Maintained', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::AGEING     => __( 'Ageing', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::ABANDONED  => __( 'Possibly abandoned', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::CLOSED     => __( 'Closed', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::UNKNOWN    => __( "Couldn't check", 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::UNVERIFIED => __( 'Not verified', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::PENDING    => __( 'Not checked yet', 'fadewatch-abandoned-closed-add-on-checker' ),
-			self::SKIPPED    => __( 'Not checked', 'fadewatch-abandoned-closed-add-on-checker' ),
+			self::MAINTAINED => __( 'Maintained', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::AGEING     => __( 'Ageing', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::ABANDONED  => __( 'Possibly abandoned', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::CLOSED     => __( 'Closed', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::NOT_ON_ORG => __( 'Not on WordPress.org', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::UNKNOWN    => __( "Couldn't check", 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::UNVERIFIED => __( 'Not verified', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::PENDING    => __( 'Not checked yet', 'fadewatch-abandoned-closed-plugin-checker' ),
+			self::SKIPPED    => __( 'Not checked', 'fadewatch-abandoned-closed-plugin-checker' ),
 		);
 	}
 

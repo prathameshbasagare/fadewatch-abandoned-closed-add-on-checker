@@ -1,4 +1,4 @@
-# Fadewatch – Abandoned & Closed Add-on Checker
+# FadeWatch – Abandoned & Closed Plugin Checker
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![WordPress](https://img.shields.io/badge/WordPress-6.4%2B-blue.svg)](https://wordpress.org)
@@ -105,7 +105,7 @@ assets/                            Admin CSS and dependency-free JS
 Build the release zip from the `release` branch. `git archive` includes committed files only, so the `.git` folder stays out:
 
 ```sh
-git archive --format=zip --prefix=fadewatch-abandoned-closed-add-on-checker/ release -o ../fadewatch-abandoned-closed-add-on-checker.zip
+git archive --format=zip --prefix=fadewatch-abandoned-closed-plugin-checker/ release -o ../fadewatch-abandoned-closed-plugin-checker.zip
 ```
 
 Run [Plugin Check](https://wordpress.org/plugins/plugin-check/) before every release.

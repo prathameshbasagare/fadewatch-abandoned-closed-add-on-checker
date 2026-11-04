@@ -1,4 +1,4 @@
-=== Fadewatch – Abandoned & Closed Add-on Checker ===
+=== FadeWatch – Abandoned & Closed Plugin Checker ===
 Contributors: curiouswpdev
 Tags: abandoned plugins, plugin maintenance, plugins, site health, security
 Requires at least: 6.4
@@ -14,7 +14,7 @@ Find out which of your plugins are closed on WordPress.org (and why), which have
 
 **Know which plugins are dead before they become a security problem.**
 
-Fadewatch shows the maintenance status of every installed plugin, right on the Plugins screen:
+FadeWatch shows the maintenance status of every installed plugin, right on the Plugins screen:
 
 * **Closed** on WordPress.org, with the **date and reason** (for example "Closed on 27 Jul 2023: Security Issue").
 * **Possibly abandoned**: no update in over 24 months (configurable).
@@ -70,7 +70,7 @@ Actions:
 
 This plugin connects to the **WordPress.org Plugins API** (`https://api.wordpress.org/plugins/info/1.2/`) to look up the maintenance status of installed plugins: last update date, whether the plugin was closed and why, "tested up to" version, rating and active installs.
 
-* **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `Fadewatch/<version>` and does not include your site address.
+* **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `FadeWatch/<version>` and does not include your site address.
 * **Only after consent:** nothing is sent until an administrator clicks "Allow checks and scan now" on the Plugin Maintenance page (or enables "WordPress.org checks" in the settings). Turning that setting off stops all requests.
 * **When:** after consent, once a day in the background, every 6 hours for closed plugins and failed checks, right after a plugin is installed, updated or activated, and when an administrator clicks "Check now".
 * No personal data about your visitors or users is sent.
@@ -86,9 +86,9 @@ This is the same service WordPress itself uses to check for plugin updates. It i
 
 == Frequently Asked Questions ==
 
-= Why does Fadewatch ask for permission first? =
+= Why does FadeWatch ask for permission first? =
 
-Checking a plugin means sending its slug to api.wordpress.org. Fadewatch only does that after an administrator agrees. You can withdraw consent at any time under Settings → "WordPress.org checks"; Fadewatch then makes no external requests.
+Checking a plugin means sending its slug to api.wordpress.org. FadeWatch only does that after an administrator agrees. You can withdraw consent at any time under Settings → "WordPress.org checks"; FadeWatch then makes no external requests.
 
 = Why does a plugin show "Not on WordPress.org"? =
 
@@ -106,9 +106,9 @@ WordPress.org could not be reached, or returned an unexpected response. The chec
 
 No. Nothing runs on the front end. In the admin, the Plugins screen reads one stored option. All requests to WordPress.org happen in the background.
 
-= What happens to my data when I delete Fadewatch? =
+= What happens to my data when I delete FadeWatch? =
 
-Scheduled checks are always removed. If "Delete all data of this plugin when it is deleted" is ticked in the settings (the default), all of Fadewatch's settings and previous scan results are removed too. If you untick it, your settings and results are kept for a later reinstall.
+Scheduled checks are always removed. If "Delete all data of this plugin when it is deleted" is ticked in the settings (the default), all of FadeWatch's settings and previous scan results are removed too. If you untick it, your settings and results are kept for a later reinstall.
 
 = Will it delete or deactivate plugins? =
 
@@ -136,7 +136,7 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 * New: the permission dialog says where checks can be turned off again.
 
 = 1.0.1 =
-* New: opt-in. Fadewatch asks an administrator before contacting WordPress.org, and checks can be turned off in the settings.
+* New: opt-in. FadeWatch asks an administrator before contacting WordPress.org, and checks can be turned off in the settings.
 * New: right after activation, the permission prompt is shown once on the Plugins screen.
 
 = 1.0.0 =
@@ -148,7 +148,7 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 The permission dialog no longer opens by itself except once after activation.
 
 = 1.0.1 =
-Fadewatch now asks for permission before contacting WordPress.org. Open Tools → Plugin Maintenance and click "Allow checks and scan now".
+FadeWatch now asks for permission before contacting WordPress.org. Open Tools → Plugin Maintenance and click "Allow checks and scan now".
 
 = 1.0.0 =
 First release.

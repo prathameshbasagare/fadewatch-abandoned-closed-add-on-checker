@@ -75,7 +75,7 @@ final class Fadewatch_Admin {
 	 * the network admin.
 	 */
 	public static function add_menu() {
-		$title = __( 'Plugin Maintenance', 'fadewatch-abandoned-closed-add-on-checker' );
+		$title = __( 'Plugin Maintenance', 'fadewatch-abandoned-closed-plugin-checker' );
 
 		if ( is_multisite() ) {
 			self::$hook = (string) add_submenu_page( 'plugins.php', $title, $title, Fadewatch_Settings::capability(), self::PAGE, array( __CLASS__, 'render_page' ) );
@@ -127,11 +127,11 @@ final class Fadewatch_Admin {
 				'start'       => $allowed && $report && empty( $state['queue'] ) && ! $meta['last_full_scan'],
 				'i18n'        => array(
 					/* translators: 1: number of checked plugins, 2: total number of plugins. */
-					'progress' => __( 'Checked %1$d of %2$d plugins…', 'fadewatch-abandoned-closed-add-on-checker' ),
-					'waiting'  => __( 'Another check is running. Waiting…', 'fadewatch-abandoned-closed-add-on-checker' ),
-					'done'     => __( 'Check complete. Reloading…', 'fadewatch-abandoned-closed-add-on-checker' ),
-					'failed'   => __( 'The check failed. Please try again.', 'fadewatch-abandoned-closed-add-on-checker' ),
-					'starting' => __( 'Starting check…', 'fadewatch-abandoned-closed-add-on-checker' ),
+					'progress' => __( 'Checked %1$d of %2$d plugins…', 'fadewatch-abandoned-closed-plugin-checker' ),
+					'waiting'  => __( 'Another check is running. Waiting…', 'fadewatch-abandoned-closed-plugin-checker' ),
+					'done'     => __( 'Check complete. Reloading…', 'fadewatch-abandoned-closed-plugin-checker' ),
+					'failed'   => __( 'The check failed. Please try again.', 'fadewatch-abandoned-closed-plugin-checker' ),
+					'starting' => __( 'Starting check…', 'fadewatch-abandoned-closed-plugin-checker' ),
 				),
 			)
 		);
@@ -148,9 +148,9 @@ final class Fadewatch_Admin {
 			array_unshift(
 				$links,
 				Fadewatch_Settings::checks_allowed()
-					? sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'fadewatch-abandoned-closed-add-on-checker' ) )
-					: sprintf( '<a href="%s"><strong>%s</strong></a>', esc_url( self::page_url() ), esc_html__( 'Allow checks', 'fadewatch-abandoned-closed-add-on-checker' ) ),
-				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url( 'settings' ) ), esc_html__( 'Settings', 'fadewatch-abandoned-closed-add-on-checker' ) )
+					? sprintf( '<a href="%s">%s</a>', esc_url( self::page_url() ), esc_html__( 'Report', 'fadewatch-abandoned-closed-plugin-checker' ) )
+					: sprintf( '<a href="%s"><strong>%s</strong></a>', esc_url( self::page_url() ), esc_html__( 'Allow checks', 'fadewatch-abandoned-closed-plugin-checker' ) ),
+				sprintf( '<a href="%s">%s</a>', esc_url( self::page_url( 'settings' ) ), esc_html__( 'Settings', 'fadewatch-abandoned-closed-plugin-checker' ) )
 			);
 		}
 		return $links;
@@ -171,17 +171,17 @@ final class Fadewatch_Admin {
 	 */
 	public static function render_page() {
 		if ( ! Fadewatch_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'fadewatch-abandoned-closed-add-on-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'fadewatch-abandoned-closed-plugin-checker' ), 403 );
 		}
 
 		$settings_tab = self::is_settings_tab();
 		?>
 		<div class="wrap fadewatch-wrap">
-			<h1><?php esc_html_e( 'Plugin Maintenance', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h1>
+			<h1><?php esc_html_e( 'Plugin Maintenance', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h1>
 
-			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'fadewatch-abandoned-closed-add-on-checker' ); ?>">
-				<a href="<?php echo esc_url( self::page_url() ); ?>" class="nav-tab<?php echo $settings_tab ? '' : ' nav-tab-active'; ?>"<?php echo $settings_tab ? '' : ' aria-current="page"'; ?>><?php esc_html_e( 'Report', 'fadewatch-abandoned-closed-add-on-checker' ); ?></a>
-				<a href="<?php echo esc_url( self::page_url( 'settings' ) ); ?>" class="nav-tab<?php echo $settings_tab ? ' nav-tab-active' : ''; ?>"<?php echo $settings_tab ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Settings', 'fadewatch-abandoned-closed-add-on-checker' ); ?></a>
+			<nav class="nav-tab-wrapper" aria-label="<?php esc_attr_e( 'Secondary menu', 'fadewatch-abandoned-closed-plugin-checker' ); ?>">
+				<a href="<?php echo esc_url( self::page_url() ); ?>" class="nav-tab<?php echo $settings_tab ? '' : ' nav-tab-active'; ?>"<?php echo $settings_tab ? '' : ' aria-current="page"'; ?>><?php esc_html_e( 'Report', 'fadewatch-abandoned-closed-plugin-checker' ); ?></a>
+				<a href="<?php echo esc_url( self::page_url( 'settings' ) ); ?>" class="nav-tab<?php echo $settings_tab ? ' nav-tab-active' : ''; ?>"<?php echo $settings_tab ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Settings', 'fadewatch-abandoned-closed-plugin-checker' ); ?></a>
 			</nav>
 
 			<?php
@@ -204,7 +204,7 @@ final class Fadewatch_Admin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag set by our own redirect.
 		if ( isset( $_GET['fadewatch_saved'] ) && '1' === sanitize_key( wp_unslash( $_GET['fadewatch_saved'] ) ) ) {
 			wp_admin_notice(
-				__( 'Settings saved.', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( 'Settings saved.', 'fadewatch-abandoned-closed-plugin-checker' ),
 				array(
 					'type'        => 'success',
 					'dismissible' => true,
@@ -214,14 +214,14 @@ final class Fadewatch_Admin {
 
 		if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 			wp_admin_notice(
-				__( 'WP-Cron is disabled on this site (DISABLE_WP_CRON). Automatic checks only run if a real cron job calls wp-cron.php. You can always use "Check now".', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( 'WP-Cron is disabled on this site (DISABLE_WP_CRON). Automatic checks only run if a real cron job calls wp-cron.php. You can always use "Check now".', 'fadewatch-abandoned-closed-plugin-checker' ),
 				array( 'type' => 'info' )
 			);
 		}
 
 		if ( Fadewatch_Settings::scheduled_scans_paused() ) {
 			wp_admin_notice(
-				__( 'Scheduled checks are paused because this is a local environment. "Check now" still works.', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( 'Scheduled checks are paused because this is a local environment. "Check now" still works.', 'fadewatch-abandoned-closed-plugin-checker' ),
 				array( 'type' => 'info' )
 			);
 		}
@@ -268,19 +268,19 @@ final class Fadewatch_Admin {
 				if ( $meta['last_full_scan'] ) {
 					printf(
 						/* translators: 1: relative time such as "3 hours", 2: date and time. */
-						esc_html__( 'Last full check: %1$s ago (%2$s).', 'fadewatch-abandoned-closed-add-on-checker' ),
+						esc_html__( 'Last full check: %1$s ago (%2$s).', 'fadewatch-abandoned-closed-plugin-checker' ),
 						esc_html( human_time_diff( (int) $meta['last_full_scan'] ) ),
 						esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $meta['last_full_scan'] ) )
 					);
 				} else {
-					esc_html_e( 'No full check has completed yet.', 'fadewatch-abandoned-closed-add-on-checker' );
+					esc_html_e( 'No full check has completed yet.', 'fadewatch-abandoned-closed-plugin-checker' );
 				}
 				?>
 			</p>
 			<?php if ( $allowed ) : ?>
-				<button type="button" class="button button-primary" id="fadewatch-check-now"><?php esc_html_e( 'Check now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+				<button type="button" class="button button-primary" id="fadewatch-check-now"><?php esc_html_e( 'Check now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
 			<?php endif; ?>
-			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'fadewatch-abandoned-closed-add-on-checker' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $export_url ); ?>"><?php esc_html_e( 'Export CSV', 'fadewatch-abandoned-closed-plugin-checker' ); ?></a>
 		</div>
 
 		<div class="fadewatch-progress" id="fadewatch-progress" hidden>
@@ -289,21 +289,21 @@ final class Fadewatch_Admin {
 		</div>
 
 		<table class="widefat striped fadewatch-table">
-			<caption class="screen-reader-text"><?php esc_html_e( 'Maintenance status of installed plugins, most serious first', 'fadewatch-abandoned-closed-add-on-checker' ); ?></caption>
+			<caption class="screen-reader-text"><?php esc_html_e( 'Maintenance status of installed plugins, most serious first', 'fadewatch-abandoned-closed-plugin-checker' ); ?></caption>
 			<thead>
 				<tr>
-					<th scope="col"><?php esc_html_e( 'Plugin', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Status', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Tested up to', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Active installs', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Rating', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Support threads resolved', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
-					<th scope="col"><?php esc_html_e( 'Version (installed / latest)', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Plugin', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Status', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Tested up to', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Active installs', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Rating', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Support threads resolved', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Version (installed / latest)', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php if ( empty( $rows ) ) : ?>
-					<tr><td colspan="7"><?php esc_html_e( 'No plugins found.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></td></tr>
+					<tr><td colspan="7"><?php esc_html_e( 'No plugins found.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></td></tr>
 				<?php endif; ?>
 				<?php
 				foreach ( $rows as $row ) :
@@ -316,9 +316,9 @@ final class Fadewatch_Admin {
 						<td class="fadewatch-table__plugin">
 							<strong><?php echo esc_html( $item['name'] ); ?></strong>
 							<span class="fadewatch-detail">
-								<?php echo esc_html( $item['active'] ? __( 'Active', 'fadewatch-abandoned-closed-add-on-checker' ) : __( 'Inactive', 'fadewatch-abandoned-closed-add-on-checker' ) ); ?>
+								<?php echo esc_html( $item['active'] ? __( 'Active', 'fadewatch-abandoned-closed-plugin-checker' ) : __( 'Inactive', 'fadewatch-abandoned-closed-plugin-checker' ) ); ?>
 								<?php if ( Fadewatch_Render::has_org_page( $eval ) && Fadewatch_Status::CLOSED !== $eval['status'] ) : ?>
-									· <a href="<?php echo esc_url( Fadewatch_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-add-on-checker' ); ?></span></a>
+									· <a href="<?php echo esc_url( Fadewatch_Render::org_url( $item['slug'] ) ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $item['slug'] ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-plugin-checker' ); ?></span></a>
 								<?php else : ?>
 									· <?php echo esc_html( $item['slug'] ); ?>
 								<?php endif; ?>
@@ -337,7 +337,7 @@ final class Fadewatch_Admin {
 							if ( $ok && $record['num_ratings'] > 0 ) {
 								printf(
 									/* translators: 1: rating percentage, 2: number of ratings. */
-									esc_html__( '%1$d%% (%2$s ratings)', 'fadewatch-abandoned-closed-add-on-checker' ),
+									esc_html__( '%1$d%% (%2$s ratings)', 'fadewatch-abandoned-closed-plugin-checker' ),
 									(int) $record['rating'],
 									esc_html( number_format_i18n( $record['num_ratings'] ) )
 								);
@@ -351,7 +351,7 @@ final class Fadewatch_Admin {
 							if ( $ok && $record['support_threads'] > 0 ) {
 								printf(
 									/* translators: 1: resolved threads, 2: total threads in the last two months. */
-									esc_html__( '%1$d of %2$d', 'fadewatch-abandoned-closed-add-on-checker' ),
+									esc_html__( '%1$d of %2$d', 'fadewatch-abandoned-closed-plugin-checker' ),
 									(int) $record['support_threads_resolved'],
 									(int) $record['support_threads']
 								);
@@ -374,13 +374,13 @@ final class Fadewatch_Admin {
 		</table>
 
 		<?php if ( $extras ) : ?>
-			<h2><?php esc_html_e( 'Not checked', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
-			<p><?php esc_html_e( 'Must-use plugins and drop-ins are not installed from WordPress.org, so they are not checked.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+			<h2><?php esc_html_e( 'Not checked', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
+			<p><?php esc_html_e( 'Must-use plugins and drop-ins are not installed from WordPress.org, so they are not checked.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 			<ul class="fadewatch-extras">
 				<?php foreach ( $extras as $extra ) : ?>
 					<li>
 						<?php echo esc_html( $extra['name'] ); ?>
-						<span class="fadewatch-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'fadewatch-abandoned-closed-add-on-checker' ) : __( 'drop-in', 'fadewatch-abandoned-closed-add-on-checker' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
+						<span class="fadewatch-detail-inline">(<?php echo esc_html( 'mustuse' === $extra['type'] ? __( 'must-use plugin', 'fadewatch-abandoned-closed-plugin-checker' ) : __( 'drop-in', 'fadewatch-abandoned-closed-plugin-checker' ) ); ?>, <code><?php echo esc_html( $extra['file'] ); ?></code>)</span>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -396,14 +396,14 @@ final class Fadewatch_Admin {
 	private static function render_consent() {
 		?>
 		<div class="notice notice-info inline fadewatch-consent">
-			<h2><?php esc_html_e( 'Allow checks to scan your plugins', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
-			<p><?php esc_html_e( 'Checks are off, so Fadewatch has not looked up any of your plugins yet. With checks on, it asks the WordPress.org Plugins API about each installed plugin and shows:', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+			<h2><?php esc_html_e( 'Allow checks to scan your plugins', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
+			<p><?php esc_html_e( 'Checks are off, so FadeWatch has not looked up any of your plugins yet. With checks on, it asks the WordPress.org Plugins API about each installed plugin and shows:', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 			<ul class="fadewatch-consent__list">
-				<li><?php esc_html_e( 'whether the plugin has been closed on WordPress.org, and why (for example, a security issue);', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
-				<li><?php esc_html_e( 'how long ago it was last updated, so abandoned plugins stand out;', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
-				<li><?php esc_html_e( 'the WordPress version it was tested up to, its rating, active installs and resolved support threads.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+				<li><?php esc_html_e( 'whether the plugin has been closed on WordPress.org, and why (for example, a security issue);', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'how long ago it was last updated, so abandoned plugins stand out;', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'the WordPress version it was tested up to, its rating, active installs and resolved support threads.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 			</ul>
-			<p><?php esc_html_e( 'Only the slug (folder name) of each plugin is sent. Nothing is sent until you allow it.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+			<p><?php esc_html_e( 'Only the slug (folder name) of each plugin is sent. Nothing is sent until you allow it.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 			<p><?php self::render_consent_button( 'button button-primary' ); ?></p>
 		</div>
 		<?php
@@ -421,7 +421,7 @@ final class Fadewatch_Admin {
 		printf(
 			'<button type="submit" form="fadewatch-consent-form" class="%1$s" data-fadewatch-open-consent>%2$s</button>',
 			esc_attr( $classes ),
-			esc_html__( 'Allow checks', 'fadewatch-abandoned-closed-add-on-checker' )
+			esc_html__( 'Allow checks', 'fadewatch-abandoned-closed-plugin-checker' )
 		);
 	}
 
@@ -472,20 +472,20 @@ final class Fadewatch_Admin {
 	private static function render_consent_dialog() {
 		?>
 		<dialog id="fadewatch-consent-dialog" class="fadewatch-dialog" aria-labelledby="fadewatch-consent-title" aria-describedby="fadewatch-consent-desc">
-			<h2 id="fadewatch-consent-title"><?php esc_html_e( 'Allow Fadewatch to check your plugins?', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
-			<p id="fadewatch-consent-desc"><?php esc_html_e( 'To show whether your plugins are maintained, closed or abandoned, Fadewatch looks them up in the WordPress.org Plugins API (api.wordpress.org).', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+			<h2 id="fadewatch-consent-title"><?php esc_html_e( 'Allow FadeWatch to check your plugins?', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
+			<p id="fadewatch-consent-desc"><?php esc_html_e( 'To show whether your plugins are maintained, closed or abandoned, FadeWatch looks them up in the WordPress.org Plugins API (api.wordpress.org).', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 			<ul class="fadewatch-dialog__list">
-				<li><?php esc_html_e( 'Only the slug (folder name) of each installed plugin is sent.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
-				<li><?php esc_html_e( 'No personal data and not your site address.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
-				<li><?php esc_html_e( 'Checks run once a day, after a plugin is installed, updated or activated, and when you click "Check now".', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
-				<li><?php esc_html_e( 'You can turn checks off at any time under Plugin Maintenance → Settings → "WordPress.org checks". Fadewatch then makes no external requests.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></li>
+				<li><?php esc_html_e( 'Only the slug (folder name) of each installed plugin is sent.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'No personal data and not your site address.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'Checks run once a day, after a plugin is installed, updated or activated, and when you click "Check now".', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'You can turn checks off at any time under Plugin Maintenance → Settings → "WordPress.org checks". FadeWatch then makes no external requests.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 			</ul>
 			<p>
-				<a href="https://wordpress.org/about/privacy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'WordPress.org privacy policy', 'fadewatch-abandoned-closed-add-on-checker' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-add-on-checker' ); ?></span></a>
+				<a href="https://wordpress.org/about/privacy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'WordPress.org privacy policy', 'fadewatch-abandoned-closed-plugin-checker' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-plugin-checker' ); ?></span></a>
 			</p>
 			<div class="fadewatch-dialog__actions">
-				<button type="submit" form="fadewatch-consent-form" class="button button-primary" autofocus><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
-				<button type="button" class="button" data-fadewatch-close><?php esc_html_e( 'Not now', 'fadewatch-abandoned-closed-add-on-checker' ); ?></button>
+				<button type="submit" form="fadewatch-consent-form" class="button button-primary" autofocus><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
+				<button type="button" class="button" data-fadewatch-close><?php esc_html_e( 'Not now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
 			</div>
 		</dialog>
 		<?php
@@ -501,51 +501,51 @@ final class Fadewatch_Admin {
 			<input type="hidden" name="action" value="fadewatch_save_settings" />
 			<?php wp_nonce_field( 'fadewatch_save_settings' ); ?>
 
-			<h2><?php esc_html_e( 'Thresholds', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'Thresholds', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><label for="fadewatch_ageing_months"><?php esc_html_e( '"Ageing" after', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_ageing_months"><?php esc_html_e( '"Ageing" after', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label></th>
 					<td>
 						<input type="number" min="1" max="120" step="1" class="small-text" id="fadewatch_ageing_months" name="fadewatch_ageing_months" value="<?php echo esc_attr( $s['ageing_months'] ); ?>" aria-describedby="fadewatch_ageing_months_desc" />
-						<?php esc_html_e( 'months without an update', 'fadewatch-abandoned-closed-add-on-checker' ); ?>
-						<p class="description" id="fadewatch_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+						<?php esc_html_e( 'months without an update', 'fadewatch-abandoned-closed-plugin-checker' ); ?>
+						<p class="description" id="fadewatch_ageing_months_desc"><?php esc_html_e( 'Default: 12.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="fadewatch_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_abandoned_months"><?php esc_html_e( '"Possibly abandoned" after', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label></th>
 					<td>
 						<input type="number" min="2" max="240" step="1" class="small-text" id="fadewatch_abandoned_months" name="fadewatch_abandoned_months" value="<?php echo esc_attr( $s['abandoned_months'] ); ?>" aria-describedby="fadewatch_abandoned_months_desc" />
-						<?php esc_html_e( 'months without an update', 'fadewatch-abandoned-closed-add-on-checker' ); ?>
-						<p class="description" id="fadewatch_abandoned_months_desc"><?php esc_html_e( 'Default: 24. Must be higher than the "Ageing" value.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+						<?php esc_html_e( 'months without an update', 'fadewatch-abandoned-closed-plugin-checker' ); ?>
+						<p class="description" id="fadewatch_abandoned_months_desc"><?php esc_html_e( 'Default: 24. Must be higher than the "Ageing" value.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 					</td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'What to check', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'What to check', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'WordPress.org checks', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'WordPress.org checks', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="fadewatch_allow_checks" value="1" <?php checked( $s['allow_checks'] ); ?> aria-describedby="fadewatch_allow_checks_desc" /> <?php esc_html_e( 'Allow Fadewatch to look up installed plugins on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
-						<p class="description" id="fadewatch_allow_checks_desc"><?php esc_html_e( 'Only plugin slugs are sent to api.wordpress.org. When this is off, Fadewatch makes no external requests.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+						<label><input type="checkbox" name="fadewatch_allow_checks" value="1" <?php checked( $s['allow_checks'] ); ?> aria-describedby="fadewatch_allow_checks_desc" /> <?php esc_html_e( 'Allow FadeWatch to look up installed plugins on WordPress.org', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
+						<p class="description" id="fadewatch_allow_checks_desc"><?php esc_html_e( 'Only plugin slugs are sent to api.wordpress.org. When this is off, FadeWatch makes no external requests.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Inactive plugins', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="fadewatch_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
-						<p class="description"><?php esc_html_e( 'Recommended: the files of inactive plugins are still on the server and can still be attacked.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+						<label><input type="checkbox" name="fadewatch_include_inactive" value="1" <?php checked( $s['include_inactive'] ); ?> /> <?php esc_html_e( 'Check inactive plugins too', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Recommended: the files of inactive plugins are still on the server and can still be attacked.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Local environments', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Local environments', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="fadewatch_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
+						<label><input type="checkbox" name="fadewatch_skip_local" value="1" <?php checked( $s['skip_local'] ); ?> /> <?php esc_html_e( 'Pause scheduled checks when the environment type is "local"', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
 						<p class="description">
 							<?php
 							printf(
 								/* translators: %s: environment type such as "production". */
-								esc_html__( 'Current environment type: %s.', 'fadewatch-abandoned-closed-add-on-checker' ),
+								esc_html__( 'Current environment type: %s.', 'fadewatch-abandoned-closed-plugin-checker' ),
 								'<code>' . esc_html( wp_get_environment_type() ) . '</code>'
 							);
 							?>
@@ -554,35 +554,35 @@ final class Fadewatch_Admin {
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'E-mail notifications', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'E-mail notifications', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Send e-mails', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Send e-mails', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 					<td>
 						<fieldset>
-							<legend class="screen-reader-text"><?php esc_html_e( 'Send e-mails', 'fadewatch-abandoned-closed-add-on-checker' ); ?></legend>
-							<label><input type="radio" name="fadewatch_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label><br />
-							<label><input type="radio" name="fadewatch_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label><br />
-							<label><input type="radio" name="fadewatch_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
-							<p class="description"><?php esc_html_e( 'A plugin closed for a security issue triggers an immediate e-mail. Other changes are collected into one e-mail per check.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+							<legend class="screen-reader-text"><?php esc_html_e( 'Send e-mails', 'fadewatch-abandoned-closed-plugin-checker' ); ?></legend>
+							<label><input type="radio" name="fadewatch_notify" value="changes" <?php checked( $s['notify'], 'changes' ); ?> /> <?php esc_html_e( 'Only when something changes (recommended)', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label><br />
+							<label><input type="radio" name="fadewatch_notify" value="weekly" <?php checked( $s['notify'], 'weekly' ); ?> /> <?php esc_html_e( 'When something changes, plus a weekly summary of open issues', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label><br />
+							<label><input type="radio" name="fadewatch_notify" value="off" <?php checked( $s['notify'], 'off' ); ?> /> <?php esc_html_e( 'Never', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
+							<p class="description"><?php esc_html_e( 'A plugin closed for a security issue triggers an immediate e-mail. Other changes are collected into one e-mail per check.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="fadewatch_recipients"><?php esc_html_e( 'Recipients', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label></th>
+					<th scope="row"><label for="fadewatch_recipients"><?php esc_html_e( 'Recipients', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label></th>
 					<td>
 						<input type="text" class="regular-text" id="fadewatch_recipients" name="fadewatch_recipients" value="<?php echo esc_attr( $s['recipients'] ); ?>" placeholder="<?php echo esc_attr( get_site_option( 'admin_email' ) ); ?>" aria-describedby="fadewatch_recipients_desc" />
-						<p class="description" id="fadewatch_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'fadewatch-abandoned-closed-add-on-checker' ); ?></p>
+						<p class="description" id="fadewatch_recipients_desc"><?php esc_html_e( 'Comma-separated e-mail addresses. Leave empty to use the administration e-mail address.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
 					</td>
 				</tr>
 			</table>
 
-			<h2><?php esc_html_e( 'Uninstall', 'fadewatch-abandoned-closed-add-on-checker' ); ?></h2>
+			<h2><?php esc_html_e( 'Uninstall', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Data', 'fadewatch-abandoned-closed-add-on-checker' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Data', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
 					<td>
-						<label><input type="checkbox" name="fadewatch_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'fadewatch-abandoned-closed-add-on-checker' ); ?></label>
+						<label><input type="checkbox" name="fadewatch_delete_on_uninstall" value="1" <?php checked( $s['delete_on_uninstall'] ); ?> /> <?php esc_html_e( 'Delete all data of this plugin when it is deleted', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
 					</td>
 				</tr>
 			</table>
@@ -597,7 +597,7 @@ final class Fadewatch_Admin {
 	 */
 	public static function handle_save_settings() {
 		if ( ! Fadewatch_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-add-on-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-plugin-checker' ), 403 );
 		}
 		check_admin_referer( 'fadewatch_save_settings' );
 
@@ -637,7 +637,7 @@ final class Fadewatch_Admin {
 	 */
 	public static function handle_grant_consent() {
 		if ( ! Fadewatch_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-add-on-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-plugin-checker' ), 403 );
 		}
 		check_admin_referer( 'fadewatch_grant_consent' );
 
@@ -665,7 +665,7 @@ final class Fadewatch_Admin {
 	 */
 	public static function handle_export_csv() {
 		if ( ! Fadewatch_Settings::current_user_can() ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-add-on-checker' ), 403 );
+			wp_die( esc_html__( 'Sorry, you are not allowed to do that.', 'fadewatch-abandoned-closed-plugin-checker' ), 403 );
 		}
 		check_admin_referer( 'fadewatch_export_csv' );
 
@@ -682,22 +682,22 @@ final class Fadewatch_Admin {
 		self::csv_row(
 			$out,
 			array(
-				__( 'Plugin', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Plugin file', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Slug', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Active', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Status', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Severity', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Details', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Latest update release', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Closed date', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Closure reason', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Tested up to', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Active installs', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Rating', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Installed version', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Latest version', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Last checked', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( 'Plugin', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Plugin file', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Slug', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Active', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Status', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Severity', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Details', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Latest update release', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Closed date', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Closure reason', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Tested up to', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Active installs', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Rating', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Installed version', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Latest version', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Last checked', 'fadewatch-abandoned-closed-plugin-checker' ),
 			)
 		);
 
@@ -713,7 +713,7 @@ final class Fadewatch_Admin {
 					$item['name'],
 					$item['file'],
 					$item['slug'],
-					$item['active'] ? __( 'Yes', 'fadewatch-abandoned-closed-add-on-checker' ) : __( 'No', 'fadewatch-abandoned-closed-add-on-checker' ),
+					$item['active'] ? __( 'Yes', 'fadewatch-abandoned-closed-plugin-checker' ) : __( 'No', 'fadewatch-abandoned-closed-plugin-checker' ),
 					Fadewatch_Status::label( $eval['status'] ),
 					$eval['severity'],
 					implode( ' ', Fadewatch_Render::details( $eval, $item, $row['record'] ) ),
@@ -761,8 +761,8 @@ final class Fadewatch_Admin {
 			return;
 		}
 
-		$content = '<p>' . esc_html__( 'Fadewatch sends the slugs (short names) of installed plugins to api.wordpress.org to look up their maintenance status. No personal data about visitors or users is sent or stored, and no tracking is used.', 'fadewatch-abandoned-closed-add-on-checker' ) . '</p>';
+		$content = '<p>' . esc_html__( 'FadeWatch sends the slugs (short names) of installed plugins to api.wordpress.org to look up their maintenance status. No personal data about visitors or users is sent or stored, and no tracking is used.', 'fadewatch-abandoned-closed-plugin-checker' ) . '</p>';
 
-		wp_add_privacy_policy_content( __( 'Fadewatch', 'fadewatch-abandoned-closed-add-on-checker' ), wp_kses_post( $content ) );
+		wp_add_privacy_policy_content( __( 'FadeWatch', 'fadewatch-abandoned-closed-plugin-checker' ), wp_kses_post( $content ) );
 	}
 }
