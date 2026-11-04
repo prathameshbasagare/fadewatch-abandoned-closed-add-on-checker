@@ -38,12 +38,12 @@ final class Fadewatch_Notifier {
 
 		$lines = array(
 			/* translators: %s: site or network name. */
-			sprintf( __( 'Fadewatch found changes on %s:', 'fadewatch-abandoned-closed-add-on-checker' ), self::site_name() ),
+			sprintf( __( 'FadeWatch found changes on %s:', 'fadewatch-abandoned-closed-plugin-checker' ), self::site_name() ),
 			'',
 		);
 
 		if ( $groups['closed'] ) {
-			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch-abandoned-closed-add-on-checker' );
+			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch-abandoned-closed-plugin-checker' );
 			foreach ( $groups['closed'] as $change ) {
 				$lines[] = '- ' . self::closed_line( $change );
 			}
@@ -54,7 +54,7 @@ final class Fadewatch_Notifier {
 			$thresholds = Fadewatch_Settings::thresholds();
 			$lines[]    = sprintf(
 				/* translators: %d: number of months. */
-				_n( 'Possibly abandoned (no update in over %d month):', 'Possibly abandoned (no update in over %d months):', $thresholds['abandoned'], 'fadewatch-abandoned-closed-add-on-checker' ),
+				_n( 'Possibly abandoned (no update in over %d month):', 'Possibly abandoned (no update in over %d months):', $thresholds['abandoned'], 'fadewatch-abandoned-closed-plugin-checker' ),
 				$thresholds['abandoned']
 			);
 			foreach ( $groups['abandoned'] as $change ) {
@@ -64,7 +64,7 @@ final class Fadewatch_Notifier {
 		}
 
 		if ( $groups['reopened'] ) {
-			$lines[] = __( 'Reopened on WordPress.org:', 'fadewatch-abandoned-closed-add-on-checker' );
+			$lines[] = __( 'Reopened on WordPress.org:', 'fadewatch-abandoned-closed-plugin-checker' );
 			foreach ( $groups['reopened'] as $change ) {
 				$lines[] = '- ' . self::name_line( $change );
 			}
@@ -77,7 +77,7 @@ final class Fadewatch_Notifier {
 
 		$subject = sprintf(
 			/* translators: %s: site or network name. */
-			__( '[%s] Plugin maintenance changes', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( '[%s] Plugin maintenance changes', 'fadewatch-abandoned-closed-plugin-checker' ),
 			self::site_name()
 		);
 
@@ -97,17 +97,17 @@ final class Fadewatch_Notifier {
 
 		$subject = sprintf(
 			/* translators: 1: site or network name, 2: plugin name. */
-			__( '[%1$s] Security alert: %2$s was closed on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( '[%1$s] Security alert: %2$s was closed on WordPress.org', 'fadewatch-abandoned-closed-plugin-checker' ),
 			self::site_name(),
 			$change['name']
 		);
 
 		$lines = array(
-			__( 'An installed plugin was closed on WordPress.org because of a security issue:', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( 'An installed plugin was closed on WordPress.org because of a security issue:', 'fadewatch-abandoned-closed-plugin-checker' ),
 			'',
 			'- ' . self::closed_line( $change ),
 			'',
-			__( 'Closed plugins no longer receive updates. Deactivate it and replace it with a maintained alternative as soon as possible.', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( 'Closed plugins no longer receive updates. Deactivate it and replace it with a maintained alternative as soon as possible.', 'fadewatch-abandoned-closed-plugin-checker' ),
 			'',
 		);
 
@@ -148,18 +148,18 @@ final class Fadewatch_Notifier {
 
 		$lines = array(
 			/* translators: %s: site or network name. */
-			sprintf( __( 'Weekly plugin maintenance summary for %s:', 'fadewatch-abandoned-closed-add-on-checker' ), self::site_name() ),
+			sprintf( __( 'Weekly plugin maintenance summary for %s:', 'fadewatch-abandoned-closed-plugin-checker' ), self::site_name() ),
 			'',
 		);
 		if ( $closed ) {
-			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch-abandoned-closed-add-on-checker' );
+			$lines[] = __( 'Closed on WordPress.org:', 'fadewatch-abandoned-closed-plugin-checker' );
 			foreach ( $closed as $line ) {
 				$lines[] = '- ' . $line;
 			}
 			$lines[] = '';
 		}
 		if ( $abandoned ) {
-			$lines[] = __( 'Possibly abandoned:', 'fadewatch-abandoned-closed-add-on-checker' );
+			$lines[] = __( 'Possibly abandoned:', 'fadewatch-abandoned-closed-plugin-checker' );
 			foreach ( $abandoned as $line ) {
 				$lines[] = '- ' . $line;
 			}
@@ -168,7 +168,7 @@ final class Fadewatch_Notifier {
 
 		$subject = sprintf(
 			/* translators: %s: site or network name. */
-			__( '[%s] Weekly plugin maintenance summary', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( '[%s] Weekly plugin maintenance summary', 'fadewatch-abandoned-closed-plugin-checker' ),
 			self::site_name()
 		);
 
@@ -188,9 +188,9 @@ final class Fadewatch_Notifier {
 			return false;
 		}
 
-		$lines[] = __( 'Full report:', 'fadewatch-abandoned-closed-add-on-checker' ) . ' ' . Fadewatch_Admin::page_url();
+		$lines[] = __( 'Full report:', 'fadewatch-abandoned-closed-plugin-checker' ) . ' ' . Fadewatch_Admin::page_url();
 		$lines[] = '';
-		$lines[] = __( 'You receive this e-mail because notifications are enabled in Fadewatch. Change this here:', 'fadewatch-abandoned-closed-add-on-checker' ) . ' ' . Fadewatch_Admin::page_url( 'settings' );
+		$lines[] = __( 'You receive this e-mail because notifications are enabled in FadeWatch. Change this here:', 'fadewatch-abandoned-closed-plugin-checker' ) . ' ' . Fadewatch_Admin::page_url( 'settings' );
 
 		return wp_mail( $recipients, $subject, implode( "\n", $lines ) );
 	}
@@ -205,11 +205,11 @@ final class Fadewatch_Notifier {
 		$parts = array( self::name_line( $change ) );
 		if ( ! empty( $change['closed_date'] ) ) {
 			/* translators: %s: date. */
-			$parts[] = sprintf( __( 'closed on %s', 'fadewatch-abandoned-closed-add-on-checker' ), Fadewatch_Render::format_ymd( $change['closed_date'] ) );
+			$parts[] = sprintf( __( 'closed on %s', 'fadewatch-abandoned-closed-plugin-checker' ), Fadewatch_Render::format_ymd( $change['closed_date'] ) );
 		}
 		if ( ! empty( $change['reason_text'] ) ) {
 			/* translators: %s: closure reason, e.g. "Security Issue". */
-			$parts[] = sprintf( __( 'reason: %s', 'fadewatch-abandoned-closed-add-on-checker' ), $change['reason_text'] );
+			$parts[] = sprintf( __( 'reason: %s', 'fadewatch-abandoned-closed-plugin-checker' ), $change['reason_text'] );
 		}
 		return implode( ', ', $parts );
 	}
@@ -226,7 +226,7 @@ final class Fadewatch_Notifier {
 		}
 		return sprintf(
 			/* translators: 1: plugin name and slug, 2: date. */
-			__( '%1$s, latest update release: %2$s', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( '%1$s, latest update release: %2$s', 'fadewatch-abandoned-closed-plugin-checker' ),
 			self::name_line( $change ),
 			wp_date( get_option( 'date_format' ), (int) $change['last_updated'] )
 		);

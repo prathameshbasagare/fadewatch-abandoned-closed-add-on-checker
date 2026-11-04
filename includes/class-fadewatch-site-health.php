@@ -27,11 +27,11 @@ final class Fadewatch_Site_Health {
 	 */
 	public static function register_tests( $tests ) {
 		$tests['direct']['fadewatch_closed_plugins'] = array(
-			'label' => __( 'Installed plugins closed on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' ),
+			'label' => __( 'Installed plugins closed on WordPress.org', 'fadewatch-abandoned-closed-plugin-checker' ),
 			'test'  => array( __CLASS__, 'test_closed' ),
 		);
 		$tests['direct']['fadewatch_abandoned_plugins'] = array(
-			'label' => __( 'Plugins without updates for a long time', 'fadewatch-abandoned-closed-add-on-checker' ),
+			'label' => __( 'Plugins without updates for a long time', 'fadewatch-abandoned-closed-plugin-checker' ),
 			'test'  => array( __CLASS__, 'test_abandoned' ),
 		);
 		return $tests;
@@ -56,9 +56,9 @@ final class Fadewatch_Site_Health {
 				'fadewatch_closed_plugins',
 				'good',
 				self::has_data()
-					? __( 'No installed plugins have been closed on WordPress.org', 'fadewatch-abandoned-closed-add-on-checker' )
-					: __( 'Plugin maintenance status has not been checked yet', 'fadewatch-abandoned-closed-add-on-checker' ),
-				__( 'Plugins closed on WordPress.org no longer receive updates, including security fixes.', 'fadewatch-abandoned-closed-add-on-checker' ),
+					? __( 'No installed plugins have been closed on WordPress.org', 'fadewatch-abandoned-closed-plugin-checker' )
+					: __( 'Plugin maintenance status has not been checked yet', 'fadewatch-abandoned-closed-plugin-checker' ),
+				__( 'Plugins closed on WordPress.org no longer receive updates, including security fixes.', 'fadewatch-abandoned-closed-plugin-checker' ),
 				array()
 			);
 		}
@@ -73,10 +73,10 @@ final class Fadewatch_Site_Health {
 			$security ? 'critical' : 'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
-				_n( '%d installed plugin has been closed on WordPress.org', '%d installed plugins have been closed on WordPress.org', count( $closed ), 'fadewatch-abandoned-closed-add-on-checker' ),
+				_n( '%d installed plugin has been closed on WordPress.org', '%d installed plugins have been closed on WordPress.org', count( $closed ), 'fadewatch-abandoned-closed-plugin-checker' ),
 				count( $closed )
 			),
-			__( 'Closed plugins no longer receive updates, including security fixes. Replace them with maintained alternatives.', 'fadewatch-abandoned-closed-add-on-checker' ),
+			__( 'Closed plugins no longer receive updates, including security fixes. Replace them with maintained alternatives.', 'fadewatch-abandoned-closed-plugin-checker' ),
 			$list
 		);
 	}
@@ -92,7 +92,7 @@ final class Fadewatch_Site_Health {
 
 		$description = sprintf(
 			/* translators: %d: number of months. */
-			_n( 'Plugins that have not been updated in over %d month may no longer be maintained.', 'Plugins that have not been updated in over %d months may no longer be maintained.', $thresholds['abandoned'], 'fadewatch-abandoned-closed-add-on-checker' ),
+			_n( 'Plugins that have not been updated in over %d month may no longer be maintained.', 'Plugins that have not been updated in over %d months may no longer be maintained.', $thresholds['abandoned'], 'fadewatch-abandoned-closed-plugin-checker' ),
 			$thresholds['abandoned']
 		);
 
@@ -100,7 +100,7 @@ final class Fadewatch_Site_Health {
 			return self::result(
 				'fadewatch_abandoned_plugins',
 				'good',
-				__( 'All checked plugins have been updated recently', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( 'All checked plugins have been updated recently', 'fadewatch-abandoned-closed-plugin-checker' ),
 				$description,
 				array()
 			);
@@ -110,7 +110,7 @@ final class Fadewatch_Site_Health {
 		foreach ( $rows as $row ) {
 			$list[] = sprintf(
 				/* translators: 1: plugin name, 2: date. */
-				__( '%1$s (latest update release: %2$s)', 'fadewatch-abandoned-closed-add-on-checker' ),
+				__( '%1$s (latest update release: %2$s)', 'fadewatch-abandoned-closed-plugin-checker' ),
 				$row['item']['name'],
 				wp_date( get_option( 'date_format' ), $row['eval']['last_updated'] )
 			);
@@ -121,7 +121,7 @@ final class Fadewatch_Site_Health {
 			'recommended',
 			sprintf(
 				/* translators: %d: number of plugins. */
-				_n( '%d plugin may be abandoned', '%d plugins may be abandoned', count( $rows ), 'fadewatch-abandoned-closed-add-on-checker' ),
+				_n( '%d plugin may be abandoned', '%d plugins may be abandoned', count( $rows ), 'fadewatch-abandoned-closed-plugin-checker' ),
 				count( $rows )
 			),
 			$description,
@@ -154,7 +154,7 @@ final class Fadewatch_Site_Health {
 			$actions = sprintf(
 				'<p><a href="%1$s">%2$s</a></p>',
 				esc_url( Fadewatch_Admin::page_url() ),
-				esc_html__( 'View the plugin maintenance report', 'fadewatch-abandoned-closed-add-on-checker' )
+				esc_html__( 'View the plugin maintenance report', 'fadewatch-abandoned-closed-plugin-checker' )
 			);
 		}
 
@@ -162,7 +162,7 @@ final class Fadewatch_Site_Health {
 			'label'       => $label,
 			'status'      => $status,
 			'badge'       => array(
-				'label' => __( 'Security', 'fadewatch-abandoned-closed-add-on-checker' ),
+				'label' => __( 'Security', 'fadewatch-abandoned-closed-plugin-checker' ),
 				'color' => 'critical' === $status ? 'red' : 'blue',
 			),
 			'description' => $html,
