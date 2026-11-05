@@ -23,15 +23,6 @@ final class Fadewatch_Store {
 	const LOCK    = 'fadewatch_scan_lock';
 
 	/**
-	 * All option names, used by uninstall.php.
-	 *
-	 * @return string[]
-	 */
-	public static function option_names() {
-		return array( Fadewatch_Settings::OPTION, self::RESULTS, self::STATE, self::META, self::CHANGES );
-	}
-
-	/**
 	 * Per-plugin results keyed by plugin file.
 	 *
 	 * @return array

@@ -24,7 +24,7 @@ Every installed plugin gets exactly one status:
 
 ## Features
 
-- **Maintenance** column on the Plugins screen: sortable, with filter links and a coloured border on closed or possibly abandoned rows.
+- **Maintenance** column on the Plugins screen, with a coloured border on closed or possibly abandoned rows.
 - Report page (**Tools → Plugin Maintenance**) with summary counts, a **Check now** button and CSV export.
 - Two Site Health tests: closed plugins (critical when closed for a security issue) and plugins without updates for a long time.
 - E-mail only when something changes, an immediate e-mail for a security closure, and an optional weekly summary.
@@ -90,7 +90,7 @@ includes/
   class-fadewatch-report.php            Evaluated rows for every screen
   class-fadewatch-notifier.php          Plain-text e-mails
   class-fadewatch-admin.php             Report and settings page, CSV export
-  class-fadewatch-plugins-screen.php    Plugins screen column, filters and sorting
+  class-fadewatch-plugins-screen.php    Plugins screen column
   class-fadewatch-site-health.php       Site Health tests
   class-fadewatch-ajax.php              "Check now" endpoints
   class-fadewatch-render.php            Shared output helpers

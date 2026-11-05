@@ -36,6 +36,21 @@ final class Fadewatch_Render {
 	}
 
 	/**
+	 * Tags and attributes used by badge() and details_html(), for wp_kses()
+	 * at output time.
+	 *
+	 * @return array
+	 */
+	public static function allowed_html() {
+		return array(
+			'span' => array(
+				'class'       => true,
+				'aria-hidden' => true,
+			),
+		);
+	}
+
+	/**
 	 * Status badge.
 	 *
 	 * @param array $eval Evaluation.

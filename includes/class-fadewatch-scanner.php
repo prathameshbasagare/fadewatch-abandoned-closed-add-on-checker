@@ -66,10 +66,14 @@ final class Fadewatch_Scanner {
 	}
 
 	/**
-	 * Schedules recurring events. On multisite they live on the main site
-	 * only, so a network does one shared scan instead of one per site.
+	 * Schedules recurring events, only once an administrator has allowed
+	 * checks. On multisite they live on the main site only, so a network
+	 * does one shared scan instead of one per site.
 	 */
 	public static function ensure_schedules() {
+		if ( ! Fadewatch_Settings::checks_allowed() ) {
+			return;
+		}
 		if ( is_multisite() && ! is_main_site() ) {
 			return;
 		}

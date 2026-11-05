@@ -100,7 +100,9 @@ final class Fadewatch_Site_Health {
 			return self::result(
 				'fadewatch_abandoned_plugins',
 				'good',
-				__( 'All checked plugins have been updated recently', 'fadewatch-abandoned-closed-plugin-checker' ),
+				self::has_data()
+					? __( 'All checked plugins have been updated recently', 'fadewatch-abandoned-closed-plugin-checker' )
+					: __( 'Plugin maintenance status has not been checked yet', 'fadewatch-abandoned-closed-plugin-checker' ),
 				$description,
 				array()
 			);

@@ -4,7 +4,7 @@ Tags: abandoned plugins, plugin maintenance, plugins, site health, security
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,7 +35,7 @@ All lookups run in the background (WP-Cron), in small batches. Opening the Plugi
 
 = Features =
 
-* "Maintenance" column on the Plugins screen, sortable, with filter links such as "Closed (2) | Possibly abandoned (5)".
+* "Maintenance" column on the Plugins screen showing each plugin's status.
 * Report page (Tools → Plugin Maintenance) with a summary, "Check now" button, and CSV export for client reports.
 * Two Site Health tests: closed plugins (critical when closed for a security issue) and plugins without updates for a long time.
 * E-mail only when something changes. A plugin closed for a security issue triggers an immediate e-mail. Optional weekly summary.
@@ -71,7 +71,7 @@ Actions:
 This plugin connects to the **WordPress.org Plugins API** (`https://api.wordpress.org/plugins/info/1.2/`) to look up the maintenance status of installed plugins: last update date, whether the plugin was closed and why, "tested up to" version, rating and active installs.
 
 * **What is sent:** only the slug (folder name) of each installed plugin, one request per plugin. The request's user agent is `FadeWatch/<version>` and does not include your site address.
-* **Only after consent:** nothing is sent until an administrator clicks "Allow checks and scan now" on the Plugin Maintenance page (or enables "WordPress.org checks" in the settings). Turning that setting off stops all requests.
+* **Only after consent:** nothing is sent, and no background checks are scheduled, until an administrator clicks "Allow checks and scan now" (or enables "WordPress.org checks" in the settings). Turning that setting off stops all requests and removes the scheduled checks.
 * **When:** after consent, once a day in the background, every 6 hours for closed plugins and failed checks, right after a plugin is installed, updated or activated, and when an administrator clicks "Check now".
 * No personal data about your visitors or users is sent.
 
@@ -81,7 +81,7 @@ This is the same service WordPress itself uses to check for plugin updates. It i
 
 1. Install the plugin from Plugins → Add New, or upload the folder to `/wp-content/plugins/`.
 2. Activate it. On multisite, network-activate it.
-3. Go to Tools → Plugin Maintenance (Network Admin → Plugins → Plugin Maintenance on multisite) and click "Allow checks and scan now".
+3. Go to Tools → Plugin Maintenance (Network Admin → Plugins → Plugin Maintenance on multisite), click "Allow checks" and confirm with "Allow checks and scan now".
 4. Results appear in the new "Maintenance" column on the Plugins screen and on the Plugin Maintenance page.
 
 == Frequently Asked Questions ==
@@ -124,11 +124,17 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 
 == Screenshots ==
 
-1. The Maintenance column and filter links on the Plugins screen.
+1. The Maintenance column on the Plugins screen.
 2. The report page with summary, "Check now" and CSV export.
 3. Site Health test for a plugin closed because of a security issue.
 
 == Changelog ==
+
+= 1.0.3 =
+* Removed: the filter links and sorting on the Plugins screen. The Maintenance column only shows information and never changes the plugin list.
+* Changed: background checks are scheduled only after an administrator allows checks, and removed when checks are turned off.
+* Changed: the permission dialog mentions the e-mail notifications.
+* Fixed: Site Health no longer reports "All checked plugins have been updated recently" before anything has been checked.
 
 = 1.0.2 =
 * Changed: the permission dialog opens by itself only once, right after activation. After that it opens only when you click "Allow checks".
@@ -143,6 +149,9 @@ Automatic checks then depend on your server's real cron job calling `wp-cron.php
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+The Plugins screen no longer has FadeWatch filter links or sorting. Use Tools → Plugin Maintenance to see plugins by status.
 
 = 1.0.2 =
 The permission dialog no longer opens by itself except once after activation.

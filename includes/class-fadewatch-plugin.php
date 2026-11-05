@@ -31,8 +31,9 @@ final class Fadewatch_Plugin {
 	}
 
 	/**
-	 * Activation: schedule events. Checks start only after consent; until
-	 * then a one-time prompt is shown on the next Plugins screen load.
+	 * Activation. If checks were allowed before (reactivation), schedule
+	 * events and scan. Otherwise nothing is scheduled; a one-time prompt
+	 * asks for consent on the next Plugins screen load.
 	 *
 	 * The plugin declares `Network: true`, so on multisite this only runs
 	 * for network activation.
