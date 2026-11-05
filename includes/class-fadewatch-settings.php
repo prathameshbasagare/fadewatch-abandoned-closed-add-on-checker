@@ -34,6 +34,9 @@ final class Fadewatch_Settings {
 			'ageing_months'       => 12,
 			'abandoned_months'    => 24,
 			'include_inactive'    => true,
+			// The Plugins screen column is shown only if an administrator
+			// turns it on.
+			'show_column'         => false,
 			'notify'              => 'changes', // off | changes | weekly.
 			'recipients'          => '',
 			'skip_local'          => false,
@@ -93,6 +96,7 @@ final class Fadewatch_Settings {
 		$out['abandoned_months'] = min( 240, max( $out['ageing_months'] + 1, $out['abandoned_months'] ) );
 
 		$out['include_inactive']    = ! empty( $input['include_inactive'] );
+		$out['show_column']         = ! empty( $input['show_column'] );
 		$out['skip_local']          = ! empty( $input['skip_local'] );
 		$out['delete_on_uninstall'] = ! empty( $input['delete_on_uninstall'] );
 		$out['allow_checks']        = ! empty( $input['allow_checks'] );
@@ -116,9 +120,17 @@ final class Fadewatch_Settings {
 
 	/**
 	 * Records an administrator's consent and turns checks on.
+	 *
+	 * @param bool|null $show_column Whether the administrator also allowed the
+	 *                               Plugins screen column; null leaves the
+	 *                               setting unchanged.
 	 */
-	public static function grant_consent() {
-		self::update( array_merge( self::get(), array( 'allow_checks' => true ) ) );
+	public static function grant_consent( $show_column = null ) {
+		$changes = array( 'allow_checks' => true );
+		if ( null !== $show_column ) {
+			$changes['show_column'] = (bool) $show_column;
+		}
+		self::update( array_merge( self::get(), $changes ) );
 		Fadewatch_Store::update_meta(
 			array(
 				'consent_by' => get_current_user_id(),

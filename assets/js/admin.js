@@ -26,6 +26,18 @@
 			} );
 		} );
 
+		// "Save and scan now" stays disabled until checks are allowed. The
+		// checkbox is also `required`, which covers browsers without JS.
+		var checksBox = document.getElementById( 'fadewatch-consent-checks' );
+		var saveButton = document.getElementById( 'fadewatch-consent-save' );
+		if ( checksBox && saveButton ) {
+			var syncSave = function () {
+				saveButton.disabled = ! checksBox.checked;
+			};
+			checksBox.addEventListener( 'change', syncSave );
+			syncSave();
+		}
+
 		// "Allow checks" opens the dialog. If the browser has no <dialog>
 		// support, the button falls back to submitting the consent form.
 		if ( typeof dialog.showModal === 'function' ) {
@@ -62,10 +74,13 @@
 		return template.replace( '%1$d', String( done ) ).replace( '%2$d', String( total ) );
 	}
 
-	function request( action ) {
+	function request( action, extra ) {
 		var body = new URLSearchParams();
 		body.append( 'action', action );
 		body.append( 'nonce', cfg.nonce );
+		Object.keys( extra || {} ).forEach( function ( key ) {
+			body.append( key, extra[ key ] );
+		} );
 
 		return window
 			.fetch( cfg.ajaxUrl, {
@@ -116,8 +131,9 @@
 	 *
 	 * @param {string|null} firstAction AJAX action that starts the scan
 	 *                                  (start or consent), or null to resume.
+	 * @param {Object}      extra       Extra POST fields for the first request.
 	 */
-	async function run( firstAction ) {
+	async function run( firstAction, extra ) {
 		if ( running ) {
 			return;
 		}
@@ -127,7 +143,7 @@
 		text.textContent = cfg.i18n.starting;
 
 		try {
-			var data = firstAction ? await request( firstAction ) : { complete: false };
+			var data = firstAction ? await request( firstAction, extra ) : { complete: false };
 
 			while ( ! data.complete ) {
 				if ( data.busy ) {
@@ -159,7 +175,12 @@
 			if ( dialog && dialog.open ) {
 				dialog.close();
 			}
-			run( 'fadewatch_grant_consent' );
+			var checks = document.getElementById( 'fadewatch-consent-checks' );
+			var column = document.getElementById( 'fadewatch-consent-column' );
+			run( 'fadewatch_grant_consent', {
+				fadewatch_allow_checks: checks && checks.checked ? '1' : '',
+				fadewatch_show_column: column && column.checked ? '1' : '',
+			} );
 		} );
 	}
 

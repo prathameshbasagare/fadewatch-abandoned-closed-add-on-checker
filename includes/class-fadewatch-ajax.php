@@ -30,7 +30,11 @@ final class Fadewatch_Ajax {
 	 */
 	public static function grant_consent() {
 		self::authorize();
-		Fadewatch_Settings::grant_consent();
+		// Consent needs the "Allow FadeWatch to look up…" checkbox.
+		if ( ! Fadewatch_Admin::posted_checkbox( 'fadewatch_allow_checks' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Tick "Allow FadeWatch to look up my installed plugins" to start checks.', 'fadewatch-abandoned-closed-plugin-checker' ) ), 400 );
+		}
+		Fadewatch_Settings::grant_consent( Fadewatch_Admin::posted_checkbox( 'fadewatch_show_column' ) );
 		wp_send_json_success( Fadewatch_Scanner::start_full_scan( 'consent' ) );
 	}
 

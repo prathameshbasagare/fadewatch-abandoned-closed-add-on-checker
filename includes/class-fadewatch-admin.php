@@ -391,7 +391,8 @@ final class Fadewatch_Admin {
 	/**
 	 * Opt-in notice on the report page. "Allow checks" opens the consent
 	 * dialog; nothing opens by itself. Nothing is sent to WordPress.org
-	 * until the administrator clicks "Allow checks and scan now" in it.
+	 * until the administrator ticks "Allow FadeWatch to look up…" in it and
+	 * clicks "Save and scan now".
 	 */
 	private static function render_consent() {
 		?>
@@ -427,7 +428,7 @@ final class Fadewatch_Admin {
 
 	/**
 	 * The form that records consent. It has no visible fields; the dialog's
-	 * "Allow checks and scan now" button submits it through its `form`
+	 * "Save and scan now" button submits it through its `form`
 	 * attribute.
 	 */
 	private static function render_consent_form() {
@@ -441,7 +442,7 @@ final class Fadewatch_Admin {
 
 	/**
 	 * While checks are off, the Plugins screen offers "Allow checks" in the
-	 * Maintenance column. Right after activation the consent dialog also
+	 * Maintenance column (when that column is turned on). Right after activation the consent dialog also
 	 * opens once by itself (the flag is deleted when it is shown); after
 	 * that it only opens when the administrator clicks "Allow checks".
 	 */
@@ -450,12 +451,18 @@ final class Fadewatch_Admin {
 			return;
 		}
 
-		self::$plugins_consent = true;
-
 		if ( get_site_transient( self::PROMPT_FLAG ) ) {
 			delete_site_transient( self::PROMPT_FLAG );
 			self::$activation_prompt = true;
 		}
+
+		// The dialog is needed for the one-time prompt, or for the
+		// Maintenance column's "Allow checks" link when the column is on.
+		if ( ! self::$activation_prompt && ! Fadewatch_Settings::get( 'show_column' ) ) {
+			return;
+		}
+
+		self::$plugins_consent = true;
 
 		add_action(
 			'admin_footer',
@@ -481,11 +488,23 @@ final class Fadewatch_Admin {
 				<li><?php esc_html_e( 'If a plugin is closed or becomes possibly abandoned, FadeWatch e-mails the site administrator. You can change or turn off e-mails in the settings.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 				<li><?php esc_html_e( 'You can turn checks off at any time under Plugin Maintenance → Settings → "WordPress.org checks". FadeWatch then makes no external requests.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 			</ul>
+			<fieldset class="fadewatch-dialog__choices">
+				<legend class="screen-reader-text"><?php esc_html_e( 'Permissions', 'fadewatch-abandoned-closed-plugin-checker' ); ?></legend>
+				<label>
+					<input type="checkbox" name="fadewatch_allow_checks" value="1" form="fadewatch-consent-form" id="fadewatch-consent-checks" required autofocus />
+					<?php esc_html_e( 'Allow FadeWatch to look up my installed plugins on WordPress.org (required).', 'fadewatch-abandoned-closed-plugin-checker' ); ?>
+				</label>
+				<label>
+					<input type="checkbox" name="fadewatch_show_column" value="1" form="fadewatch-consent-form" id="fadewatch-consent-column" <?php checked( (bool) Fadewatch_Settings::get( 'show_column' ) ); ?> />
+					<?php esc_html_e( 'Show a "Maintenance" column on the Plugins screen with each plugin\'s status (optional).', 'fadewatch-abandoned-closed-plugin-checker' ); ?>
+				</label>
+				<p class="description"><?php esc_html_e( 'You can change both later in the settings.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
+			</fieldset>
 			<p>
 				<a href="https://wordpress.org/about/privacy/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'WordPress.org privacy policy', 'fadewatch-abandoned-closed-plugin-checker' ); ?><span class="screen-reader-text"> <?php esc_html_e( '(opens in a new tab)', 'fadewatch-abandoned-closed-plugin-checker' ); ?></span></a>
 			</p>
 			<div class="fadewatch-dialog__actions">
-				<button type="submit" form="fadewatch-consent-form" class="button button-primary" autofocus><?php esc_html_e( 'Allow checks and scan now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
+				<button type="submit" form="fadewatch-consent-form" class="button button-primary" id="fadewatch-consent-save"><?php esc_html_e( 'Save and scan now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
 				<button type="button" class="button" data-fadewatch-close><?php esc_html_e( 'Not now', 'fadewatch-abandoned-closed-plugin-checker' ); ?></button>
 			</div>
 		</dialog>
@@ -555,6 +574,17 @@ final class Fadewatch_Admin {
 				</tr>
 			</table>
 
+			<h2><?php esc_html_e( 'Display', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Plugins screen', 'fadewatch-abandoned-closed-plugin-checker' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="fadewatch_show_column" value="1" <?php checked( $s['show_column'] ); ?> aria-describedby="fadewatch_show_column_desc" /> <?php esc_html_e( 'Show a "Maintenance" column on the Plugins screen', 'fadewatch-abandoned-closed-plugin-checker' ); ?></label>
+						<p class="description" id="fadewatch_show_column_desc"><?php esc_html_e( 'Shows each plugin\'s maintenance status next to it in the plugin list. Off by default; the full report is always available on this page.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
 			<h2><?php esc_html_e( 'E-mail notifications', 'fadewatch-abandoned-closed-plugin-checker' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -609,6 +639,7 @@ final class Fadewatch_Admin {
 				'ageing_months'       => isset( $_POST['fadewatch_ageing_months'] ) ? absint( wp_unslash( $_POST['fadewatch_ageing_months'] ) ) : 0,
 				'abandoned_months'    => isset( $_POST['fadewatch_abandoned_months'] ) ? absint( wp_unslash( $_POST['fadewatch_abandoned_months'] ) ) : 0,
 				'include_inactive'    => self::posted_checkbox( 'fadewatch_include_inactive' ),
+				'show_column'         => self::posted_checkbox( 'fadewatch_show_column' ),
 				'skip_local'          => self::posted_checkbox( 'fadewatch_skip_local' ),
 				'delete_on_uninstall' => self::posted_checkbox( 'fadewatch_delete_on_uninstall' ),
 				'allow_checks'        => self::posted_checkbox( 'fadewatch_allow_checks' ),
@@ -644,7 +675,13 @@ final class Fadewatch_Admin {
 		}
 		check_admin_referer( 'fadewatch_grant_consent' );
 
-		Fadewatch_Settings::grant_consent();
+		// Consent needs the "Allow FadeWatch to look up…" checkbox.
+		if ( ! self::posted_checkbox( 'fadewatch_allow_checks' ) ) {
+			wp_safe_redirect( self::page_url() );
+			exit;
+		}
+
+		Fadewatch_Settings::grant_consent( self::posted_checkbox( 'fadewatch_show_column' ) );
 		Fadewatch_Scanner::start_full_scan( 'consent' );
 
 		wp_safe_redirect( self::page_url() );
@@ -652,14 +689,14 @@ final class Fadewatch_Admin {
 	}
 
 	/**
-	 * Reads a checkbox from the settings form. Only called after the nonce
-	 * check in handle_save_settings().
+	 * Reads a posted checkbox. Only called after a nonce check
+	 * (handle_save_settings(), handle_grant_consent(), the consent AJAX call).
 	 *
 	 * @param string $name Field name.
 	 * @return bool
 	 */
-	private static function posted_checkbox( $name ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified in handle_save_settings().
+	public static function posted_checkbox( $name ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified by every caller.
 		return isset( $_POST[ $name ] ) && '1' === sanitize_text_field( wp_unslash( $_POST[ $name ] ) );
 	}
 

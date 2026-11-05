@@ -24,7 +24,7 @@ Every installed plugin gets exactly one status:
 
 ## Features
 
-- **Maintenance** column on the Plugins screen, with a coloured border on closed or possibly abandoned rows.
+- Optional **Maintenance** column on the Plugins screen (off by default, turned on in the settings), with a coloured border on closed or possibly abandoned rows.
 - Report page (**Tools → Plugin Maintenance**) with summary counts, a **Check now** button and CSV export.
 - Two Site Health tests: closed plugins (critical when closed for a security issue) and plugins without updates for a long time.
 - E-mail only when something changes, an immediate e-mail for a security closure, and an optional weekly summary.
@@ -32,7 +32,7 @@ Every installed plugin gets exactly one status:
 
 ## How it works
 
-- **Opt-in first.** Nothing is sent to WordPress.org until an administrator clicks "Allow checks and scan now" (or enables it in Settings). Turning it off stops all requests.
+- **Opt-in first.** Nothing is sent to WordPress.org until an administrator ticks "Allow FadeWatch to look up my installed plugins" and clicks "Save and scan now" (or enables it in Settings). Turning it off stops all requests.
 - **Background only.** WordPress.org is queried through WP-Cron in batches of 10. Each batch stops after 15 seconds to stay under PHP time limits. Admin pages only read stored data and never make HTTP requests. Nothing runs on the front end.
 - **Check now.** Runs the same batches from the browser over AJAX, so checks still work when WP-Cron is disabled or broken.
 - **Re-checks.** Closed plugins and failed checks are re-checked every 6 hours. Plugins are re-checked right after they are installed, updated or activated.
