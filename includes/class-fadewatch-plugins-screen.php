@@ -24,11 +24,12 @@ final class Fadewatch_Plugins_Screen {
 	}
 
 	/**
-	 * Adds the column, only on plugins.php and only for users who may use
-	 * this plugin.
+	 * Adds the column, only on plugins.php, only when an administrator has
+	 * turned it on in the settings, and only for users who may use this
+	 * plugin.
 	 */
 	public static function setup() {
-		if ( ! Fadewatch_Settings::current_user_can() ) {
+		if ( ! Fadewatch_Settings::get( 'show_column' ) || ! Fadewatch_Settings::current_user_can() ) {
 			return;
 		}
 		// On multisite, plugins are managed in the network admin only.
