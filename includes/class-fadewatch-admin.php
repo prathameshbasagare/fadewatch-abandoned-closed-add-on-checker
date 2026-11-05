@@ -326,8 +326,8 @@ final class Fadewatch_Admin {
 						</td>
 						<td>
 							<?php
-							echo Fadewatch_Render::badge( $eval ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::badge().
-							echo Fadewatch_Render::details_html( $eval, $item, $record ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in Fadewatch_Render::details_html().
+							echo wp_kses( Fadewatch_Render::badge( $eval ), Fadewatch_Render::allowed_html() );
+							echo wp_kses( Fadewatch_Render::details_html( $eval, $item, $record ), Fadewatch_Render::allowed_html() );
 							?>
 						</td>
 						<td><?php echo $ok && '' !== $record['tested'] ? esc_html( $record['tested'] ) : '&mdash;'; ?></td>
@@ -478,6 +478,7 @@ final class Fadewatch_Admin {
 				<li><?php esc_html_e( 'Only the slug (folder name) of each installed plugin is sent.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 				<li><?php esc_html_e( 'No personal data and not your site address.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 				<li><?php esc_html_e( 'Checks run once a day, after a plugin is installed, updated or activated, and when you click "Check now".', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
+				<li><?php esc_html_e( 'If a plugin is closed or becomes possibly abandoned, FadeWatch e-mails the site administrator. You can change or turn off e-mails in the settings.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 				<li><?php esc_html_e( 'You can turn checks off at any time under Plugin Maintenance → Settings → "WordPress.org checks". FadeWatch then makes no external requests.', 'fadewatch-abandoned-closed-plugin-checker' ); ?></li>
 			</ul>
 			<p>
@@ -621,8 +622,10 @@ final class Fadewatch_Admin {
 			Fadewatch_Settings::grant_consent();
 			Fadewatch_Scanner::start_full_scan( 'consent' );
 		} elseif ( ! $saved['allow_checks'] && $before['allow_checks'] ) {
-			// Consent withdrawn: drop anything still queued.
+			// Consent withdrawn: drop anything still queued and stop the
+			// scheduled checks.
 			Fadewatch_Store::save_state( array() );
+			Fadewatch_Scanner::clear_schedules();
 		} elseif ( $saved['include_inactive'] && ! $before['include_inactive'] ) {
 			// Newly included inactive plugins need data.
 			Fadewatch_Scanner::start_full_scan( 'settings' );

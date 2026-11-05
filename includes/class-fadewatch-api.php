@@ -24,7 +24,7 @@ final class Fadewatch_API {
 	 * @return array Normalised record. `result` is one of ok | closed | not_found | error.
 	 */
 	public static function fetch_plugin( $slug ) {
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			self::build_url( $slug ),
 			array(
 				'timeout'     => self::TIMEOUT,

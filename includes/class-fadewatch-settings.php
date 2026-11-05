@@ -126,6 +126,7 @@ final class Fadewatch_Settings {
 			)
 		);
 		delete_site_transient( Fadewatch_Admin::PROMPT_FLAG );
+		Fadewatch_Scanner::ensure_schedules();
 	}
 
 	/**
